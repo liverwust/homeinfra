@@ -5,7 +5,43 @@
   gather_facts: false
   # no_log: "{{ molecule_no_log }}"
   tasks:
-    # TODO: Developer must implement and populate 'server' variable
+    - name: Identify virtual machines in VMware Workstation Pro / Fusion Pro
+      qsypoq.vmware_desktop.unix_vmware_desktop_vminfos:
+        username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
+        password: "{{ lookup('env', 'HOMEINFRA_TEST_API_PASSWORD') }}"
+        api_url: "{{ lookup('env', 'HOMEINFRA_TEST_API_URL') }}"
+        api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
+      register: homeinfra_test_vms
+
+    - name: Fail if the base VM cannot be located
+      ansible.builtin.assert:
+        that: "{{ homeinfra_test_vms.msg | map(attribute='path') | map('basename') is contains(lookup('env', 'HOMEINFRA_TEST_BASE_VMNAME') ~ '.vmx') }}"
+        fail_msg: "Could not locate the base virtual machine named {{ lookup('env', 'HOMEINFRA_TEST_BASE_VMNAME') }}"
+
+    - name: Clone the base virtual machine
+      qsypoq.vmware_desktop.unix_vmware_desktop_vmmgmt:
+        target_vm: "{{ homeinfra_test_vm.id }}"
+        username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
+        password: "{{ lookup('env', 'HOMEINFRA_TEST_API_PASSWORD') }}"
+        api_url: "{{ lookup('env', 'HOMEINFRA_TEST_API_URL') }}"
+        api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
+        action: clone
+        name: "{{ lookup('env', 'HOMEINFRA_TEST_CLONE_VMNAME') }}"
+      loop_control:
+        loop_var: homeinfra_test_vm
+      loop: "{{ homeinfra_test_vms.msg }}"
+      when: "(homeinfra_test_vm.path | basename) == (lookup('env', 'HOMEINFRA_TEST_BASE_VMNAME') ~ '.vmx')"
+      register: homeinfra_test_cloned_vm
+
+    - name: Power up the cloned virtual machine
+      qsypoq.vmware_desktop.unix_vmware_desktop_power:
+        target_vm: "{{ homeinfra_test_cloned_vm.results | map(attribute='msg') | map(attribute='id') | first }}"
+        username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
+        password: "{{ lookup('env', 'HOMEINFRA_TEST_API_PASSWORD') }}"
+        api_url: "{{ lookup('env', 'HOMEINFRA_TEST_API_URL') }}"
+        api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
+        # This needs to be a string, so YAML doesn't treat it as a bool
+        state: "on"
 
     - name: Create instance config
       when: server.changed | default(false) | bool  # noqa no-handler

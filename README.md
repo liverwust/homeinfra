@@ -32,7 +32,8 @@ a series of environment variables in [_.env.yml_][env_yml]. Please
 initialize the file in the top-level of the repository as follows:
 
 ```yaml
-HOMEINFRA_TEST_VMNAME: "<name of the transient VM>"
+HOMEINFRA_TEST_BASE_VMNAME: "<name of the base VM>"
+HOMEINFRA_TEST_CLONE_VMNAME: "<name of the transient VM>"
 HOMEINFRA_TEST_API_USERNAME: "<some username set during vmrest -C>"
 HOMEINFRA_TEST_API_PASSWORD: "<some password>"
 HOMEINFRA_TEST_API_URL: "http://127.0.0.1"
@@ -45,6 +46,12 @@ initialized by running `vmrest -C`. While running Molecule tests, the
 `vmrest` program should be running somewhere in the background, and the
 URL (particularly the port number) which it displays should be
 substituted into the `.env.yml` file.
+
+Note that, due to a limitation of the API, there is no support for
+creating or deleting snapshots on a particular VM. Instead, the Molecule
+logic will clone a "base" VM and then delete it once finished with it.
+This is a "Linked Clone" which maintains a copy-on-write layer on top of
+the Base VM... or in other words, a snapshot by a different name.
 
 [Molecule]: https://ansible.readthedocs.io/projects/molecule/
 [qsypoq]: https://github.com/qsypoq/Ansible-VMware-Workstation-Fusion-Pro-Modules/blob/master/galaxy.yml
