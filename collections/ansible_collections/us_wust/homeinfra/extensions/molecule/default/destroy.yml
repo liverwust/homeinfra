@@ -5,7 +5,26 @@
   gather_facts: false
   # no_log: "{{ molecule_no_log }}"
   tasks:
-    # Developer must implement.
+    - name: Identify virtual machines in VMware Workstation Pro / Fusion Pro
+      qsypoq.vmware_desktop.unix_vmware_desktop_vminfos:
+        username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
+        password: "{{ lookup('env', 'HOMEINFRA_TEST_API_PASSWORD') }}"
+        api_url: "{{ lookup('env', 'HOMEINFRA_TEST_API_URL') }}"
+        api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
+      register: homeinfra_test_vms
+
+    - name: Shut down the cloned virtual machine, if it exists
+      qsypoq.vmware_desktop.unix_vmware_desktop_power:
+        target_vm: "{{ homeinfra_test_vm.id }}"
+        username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
+        password: "{{ lookup('env', 'HOMEINFRA_TEST_API_PASSWORD') }}"
+        api_url: "{{ lookup('env', 'HOMEINFRA_TEST_API_URL') }}"
+        api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
+        state: shutdown
+      loop_control:
+        loop_var: homeinfra_test_vm
+      loop: "{{ homeinfra_test_vms.msg }}"
+      when: "{{ (homeinfra_test_vm.path | basename) == (lookup('env', 'HOMEINFRA_TEST_VMNAME') ~ '.vmx') }}"
 
     # Mandatory configuration for Molecule to function.
 

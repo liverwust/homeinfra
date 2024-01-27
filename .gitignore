@@ -1,5 +1,7 @@
 # Don't capture the ansible.cfg; let the user override it
 /ansible.cfg
+# Or the .env.yml for Molecule
+/.env.yml
 
 # https://chronicler.tech/my-gitignore-for-ansible-projects/
 # Ansible runtime and backups
