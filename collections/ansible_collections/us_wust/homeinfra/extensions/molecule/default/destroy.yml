@@ -13,7 +13,11 @@
         api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
       register: homeinfra_test_vms
 
-    - name: Shut down the cloned virtual machine, if it exists
+    - name: Identify the specific VM in question
+      ansible.builtin.set_fact:
+        homeinfra_test_vm: "{{ homeinfra_test_vms.msg | selectattr('path', 'match', \".*\\/\" ~ lookup('env', 'HOMEINFRA_TEST_VMNAME') ~ \"\\.vmx$\") | first }}"
+
+    - name: Shut down the virtual machine
       qsypoq.vmware_desktop.unix_vmware_desktop_power:
         target_vm: "{{ homeinfra_test_vm.id }}"
         username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
@@ -22,23 +26,9 @@
         api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
         # This needs to be a string, so YAML doesn't treat it as a bool
         state: "off"
-      loop_control:
-        loop_var: homeinfra_test_vm
-      loop: "{{ homeinfra_test_vms.msg }}"
-      when: "(homeinfra_test_vm.path | basename) == (lookup('env', 'HOMEINFRA_TEST_CLONE_VMNAME') ~ '.vmx')"
 
-    - name: Delete the cloned virtual machine, if it exists
-      qsypoq.vmware_desktop.unix_vmware_desktop_vmmgmt:
-        target_vm: "{{ homeinfra_test_vm.id }}"
-        username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
-        password: "{{ lookup('env', 'HOMEINFRA_TEST_API_PASSWORD') }}"
-        api_url: "{{ lookup('env', 'HOMEINFRA_TEST_API_URL') }}"
-        api_port: "{{ lookup('env', 'HOMEINFRA_TEST_API_PORT') }}"
-        action: delete
-      loop_control:
-        loop_var: homeinfra_test_vm
-      loop: "{{ homeinfra_test_vms.msg }}"
-      when: "(homeinfra_test_vm.path | basename) == (lookup('env', 'HOMEINFRA_TEST_CLONE_VMNAME') ~ '.vmx')"
+    - name: Revert the virtual machine to the known-good snapshot
+      ansible.builtin.command: "'/Applications/VMware Fusion.app/Contents/Public/vmrun' -T fusion revertToSnapshot \"{{ homeinfra_test_vm.path }}\" \"{{ lookup('env', 'HOMEINFRA_TEST_VM_SNAPSHOT_NAME') }}\""
 
     # Mandatory configuration for Molecule to function.
 
