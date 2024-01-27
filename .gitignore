@@ -1,0 +1,8 @@
+# https://chronicler.tech/my-gitignore-for-ansible-projects/
+
+# Ansible runtime and backups
+*.original
+*.tmp
+*.bkp
+*.retry
+*.*~
