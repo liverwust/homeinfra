@@ -1,5 +1,7 @@
-# https://chronicler.tech/my-gitignore-for-ansible-projects/
+# Don't capture the ansible.cfg; let the user override it
+/ansible.cfg
 
+# https://chronicler.tech/my-gitignore-for-ansible-projects/
 # Ansible runtime and backups
 *.original
 *.tmp
