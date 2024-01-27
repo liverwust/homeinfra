@@ -38,6 +38,8 @@ HOMEINFRA_TEST_API_USERNAME: "<some username set during vmrest -C>"
 HOMEINFRA_TEST_API_PASSWORD: "<some password>"
 HOMEINFRA_TEST_API_URL: "http://127.0.0.1"
 HOMEINFRA_TEST_API_PORT: "<some port # output by vmrest>"
+HOMEINFRA_TEST_SSH_USER: "<username in the guest OS>"
+HOMEINFRA_TEST_SSH_IDENTITY_FILE: "<id_rsa on the host; authorized in the guest>"
 ```
 
 These variables are best understood by reading through this page,

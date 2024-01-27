@@ -42,22 +42,17 @@
       delay: 6
 
     - name: Create instance config
-      when: server.changed | default(false) | bool  # noqa no-handler
       block:
-        - name: Populate instance config dict  # noqa jinja
+        - name: Populate instance config dict
           ansible.builtin.set_fact:
-            instance_conf_dict: {}
-            # instance': "{{ }}",
-            # address': "{{ }}",
-            # user': "{{ }}",
-            # port': "{{ }}",
-            # 'identity_file': "{{ }}", }
-          with_items: "{{ server.results }}"
+            instance_conf:
+              - instance: instance
+                address: "{{ homeinfra_test_vm_ip.msg.ip }}"
+                port: 22
+                user: "{{ lookup('env', 'HOMEINFRA_TEST_SSH_USER') }}"
+                identity_file: "{{ lookup('env', 'HOMEINFRA_TEST_SSH_IDENTITY_FILE') }}"
+                shell_type: sh
           register: instance_config_dict
-
-        - name: Convert instance config dict to a list
-          ansible.builtin.set_fact:
-            instance_conf: "{{ instance_config_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
 
         - name: Dump instance config
           ansible.builtin.copy:
