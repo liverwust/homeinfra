@@ -1,13 +1,14 @@
 ---
 - name: Converge
   hosts: all
+  become: true
   gather_facts: true
   tasks:
     - name: Run sidecar VM tasks
       ansible.builtin.import_role:
-        name: us_wust.hostinfra.sidecar
+        name: us_wust.homeinfra.sidecar
       vars:
-        hostinfra_sidecar_ipv4:
+        homeinfra_sidecar_ipv4:
           # pick the address reported / assigned by VMware Fusion, but
           # reconfigure it as static
           address: "{{ ansible_host }}"
@@ -15,9 +16,9 @@
           prefixlen: 24
           # strip the last (host) octet, and replace it with a 2
           # e.g., 192.168.45.67 -> 192.168.45.2
-          default_gateway: "{{ ansible_host | regex(\"^(.*\\.)(.*)$\", \"\\1.2\") }}"
+          default_gateway: "{{ ansible_host | regex_replace(\"^(.*)\\.(.*)$\", \"\\1.2\") }}"
           dns_servers:
-            - "{{ ansible_host | regex(\"^(.*\\.)(.*)$\", \"\\1.2\") }}"
+            - "{{ ansible_host | regex_replace(\"^(.*)\\.(.*)$\", \"\\1.2\") }}"
           dns_searchlist: []
 
 ...

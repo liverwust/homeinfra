@@ -4,9 +4,9 @@
 - name: Write ifcfg network configuration file for the main adapter
   ansible.builtin.template:
     src: "etc/sysconfig/network/ifcfg-IFNAME.j2"
-    dest: "/etc/sysconfig/network/ifcfg-{{ ansible_default_ipv4.interface }}.j2"
+    dest: "/etc/sysconfig/network/ifcfg-{{ ansible_default_ipv4.interface }}"
     backup: yes
-  notify: wicked ifreload
+  notify: wicked ifreload (if this fails, check the IP address)
 
 - name: Write ifcfg network information for default gateway
   ansible.builtin.copy:
@@ -14,7 +14,7 @@
       default  {{ homeinfra_sidecar_ipv4.default_gateway }}  0.0.0.0  {{ ansible_default_ipv4.interface }}
     dest: /etc/sysconfig/network/routes
     backup: yes
-  notify: wicked ifreload
+  notify: wicked ifreload (if this fails, check the IP address)
 
 - name: Write ifcfg netconfig information for DNS resolution
   ansible.builtin.lineinfile:
@@ -33,14 +33,9 @@
       value: "{{ homeinfra_sidecar_ipv4.dns_servers | default([]) | join(' ') }}"
   loop_control:
     loop_var: homeinfra_sidecar_wicked_config
-  notify: netconfig update
+  notify: netconfig update (if this fails, check the IP address)
 
-- name: Flush handlers before the following assertion
+- name: Flush handlers before continuing
   ansible.builtin.meta: flush_handlers
-
-- name: Stop the play if attempting to change network settings
-  ansible.builtin.assert:
-    that: "ansible_default_ipv4.address == homeinfra_sidecar_ipv4.address"
-    fail_msg: "Attempted to change {{ ansible_default_ipv4.address }} to {{ homeinfra_sidecar_ipv4.address }}; please rerun the playbook"
 
 ...

@@ -27,7 +27,7 @@
         # This needs to be a string, so YAML doesn't treat it as a bool
         state: "on"
 
-    - name: Obtain the IP address from the clone
+    - name: Obtain the IP address from the VM (this may take a while)
       qsypoq.vmware_desktop.unix_vmware_desktop_adaptersmgmt:
         target_vm: "{{ homeinfra_test_vm.id }}"
         username: "{{ lookup('env', 'HOMEINFRA_TEST_API_USERNAME') }}"
@@ -52,6 +52,8 @@
                 user: "{{ lookup('env', 'HOMEINFRA_TEST_SSH_USER') }}"
                 identity_file: "{{ lookup('env', 'HOMEINFRA_TEST_SSH_IDENTITY_FILE') }}"
                 shell_type: sh
+                become_method: sudo
+                become_pass: "{{ lookup('env', 'HOMEINFRA_TEST_BECOME_PASSWORD') }}"
           register: instance_config_dict
 
         - name: Dump instance config
