@@ -1,0 +1,10 @@
+---
+# Handle changes related to the wicked network manager
+
+- name: wicked ifreload
+  ansible.builtin.command: /usr/sbin/wicked ifreload
+
+- name: netconfig update
+  ansible.builtin.command: /sbin/netconfig update --force-replace
+
+...

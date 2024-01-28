@@ -1,0 +1,46 @@
+---
+# Configure the wicked network manager
+
+- name: Write ifcfg network configuration file for the main adapter
+  ansible.builtin.template:
+    src: "etc/sysconfig/network/ifcfg-IFNAME.j2"
+    dest: "/etc/sysconfig/network/ifcfg-{{ ansible_default_ipv4.interface }}.j2"
+    backup: yes
+  notify: wicked ifreload
+
+- name: Write ifcfg network information for default gateway
+  ansible.builtin.copy:
+    content: |
+      default  {{ homeinfra_sidecar_ipv4.default_gateway }}  0.0.0.0  {{ ansible_default_ipv4.interface }}
+    dest: /etc/sysconfig/network/routes
+    backup: yes
+  notify: wicked ifreload
+
+- name: Write ifcfg netconfig information for DNS resolution
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/network/config
+    regexp: "^({{ homeinfra_sidecar_wicked_config.name }})=\"([^\"]*)\"$"
+    line: "{{ homeinfra_sidecar_wicked_config.name }}=\"{{ homeinfra_sidecar_wicked_config.value }}\""
+    backup: yes
+  loop:
+    - name: NETCONFIG_DNS_POLICY
+      value: STATIC
+    - name: NETCONFIG_DNS_FORWARDER
+      value: resolver
+    - name: NETCONFIG_DNS_STATIC_SEARCHLIST
+      value: "{{ homeinfra_sidecar_ipv4.dns_searchlist | default([]) | join(' ') }}"
+    - name: NETCONFIG_DNS_STATIC_SERVERS
+      value: "{{ homeinfra_sidecar_ipv4.dns_servers | default([]) | join(' ') }}"
+  loop_control:
+    loop_var: homeinfra_sidecar_wicked_config
+  notify: netconfig update
+
+- name: Flush handlers before the following assertion
+  ansible.builtin.meta: flush_handlers
+
+- name: Stop the play if attempting to change network settings
+  ansible.builtin.assert:
+    that: "ansible_default_ipv4.address == homeinfra_sidecar_ipv4.address"
+    fail_msg: "Attempted to change {{ ansible_default_ipv4.address }} to {{ homeinfra_sidecar_ipv4.address }}; please rerun the playbook"
+
+...
