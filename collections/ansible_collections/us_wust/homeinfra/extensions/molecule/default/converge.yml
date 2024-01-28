@@ -8,6 +8,7 @@
       ansible.builtin.import_role:
         name: us_wust.homeinfra.sidecar
       vars:
+        homeinfra_sidecar_hostname: testbox
         homeinfra_sidecar_ipv4:
           # pick the address reported / assigned by VMware Fusion, but
           # reconfigure it as static
