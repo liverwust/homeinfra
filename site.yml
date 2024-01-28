@@ -1,0 +1,12 @@
+---
+
+- name: Run sidecar VM basic configuration
+  hosts: sidecar_vm
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Run sidecar VM tasks
+      ansible.builtin.import_role:
+        name: us_wust.homeinfra.sidecar
+
+...
