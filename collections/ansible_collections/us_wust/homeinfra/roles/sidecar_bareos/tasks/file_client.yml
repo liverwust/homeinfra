@@ -1,0 +1,39 @@
+---
+# File Daemon / Client on the sidecar VM
+
+- ansible.builtin.include_role:
+    name: robertdebock.bareos.bareos_fd
+  vars:
+    bareos_fd_encryption_enabled: false  # TODO
+
+    bareos_fd_directors:
+      - name: "bareos-dir"
+        password: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_password }}"
+        monitor: no
+        connection_from_client_to_director: no
+        connection_from_director_to_client: yes
+        tls_enable: no
+        tls_verify_peer: no
+
+    bareos_fd_messages:
+      - name: bareos-standard-msg
+        description: "Send relevant messages to the Director."
+        director:
+          server: bareos-dir
+          messages:
+            - all
+            - "!skipped"
+            - "!restored"
+        description: "Send relevant messages to the Director."
+        append:
+          file: "/var/log/bareos/bareos.log"
+          messages:
+            - all
+            - "!skipped"
+            - "!terminate"
+        console:
+          - all
+          - "!skipped"
+          - "!saved"
+
+...
