@@ -29,6 +29,7 @@
         fileset: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_fileset.name }}"
         messages: bareos-standard-msg
         pool: bareos-cloud
+        storage: sidecar-sd
         type: Backup
 
     bareos_dir_messages:
@@ -55,7 +56,6 @@
         maximum_volume_bytes: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.pool_max_volume_bytes }}"
         maximum_volumes: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.pool_max_volumes }}"
         pool_type: Backup
-        storage: sidecar-sd
 
     bareos_dir_storages:
       - name: sidecar-sd
