@@ -4,6 +4,8 @@
 - ansible.builtin.include_role:
     name: robertdebock.bareos.bareos_sd
   vars:
+    bareos_sd_tls_enable: no
+    bareos_sd_tls_verify_peer: no
     bareos_sd_devices:
       - name: sidecar-sd
         # this is an arbitrary name

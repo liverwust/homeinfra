@@ -1,5 +1,6 @@
 ---
 # Director resources for centralized control
+# Also the Console installation (bconsole)
 
 - ansible.builtin.include_role:
     name: robertdebock.bareos.bareos_dir
@@ -64,5 +65,19 @@
         device: sidecar-sd-00
         # this is an arbitrary name
         media_type: S3_Object
+        tls_enable: no
+        tls_verify_peer: no
+
+
+- ansible.builtin.include_role:
+    name: robertdebock.bareos.bareos_console
+  vars:
+    bareos_console_directors:
+      - name: bareos-dir
+        address: localhost
+        password: "{{ homeinfra_sidecar_bareos_config.director_password }}"
+        description: "Bareos Console credentials for local Director"
+        tls_enable: yes
+        tls_verify_peer: no
 
 ...
