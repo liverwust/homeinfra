@@ -1,0 +1,20 @@
+---
+
+# Backup Archiving REcovery Open Sourced (bareos)
+
+- ansible.builtin.include_role:
+    name: robertdebock.roles.buildtools
+
+- ansible.builtin.include_role:
+    name: robertdebock.roles.python_pip
+
+- ansible.builtin.include_role:
+    name: robertdebock.roles.postgres
+
+- ansible.builtin.include_role:
+    name: robertdebock.bareos.bareos_repository
+  vars:
+    bareos_repository_type: community
+    bareos_repository_release: current
+
+...
