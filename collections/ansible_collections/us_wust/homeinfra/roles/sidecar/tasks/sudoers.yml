@@ -10,7 +10,7 @@
   ansible.builtin.user:
     append: true
     groups: wheel
-    name: "{{ ansible_ssh_user }}"
+    name: "{{ ansible_user }}"
 
 - name: Uncomment sudoers line to allow wheel sudoers
   ansible.builtin.replace:
