@@ -5,4 +5,6 @@
 
 - ansible.builtin.import_tasks: director.yml
 
+- ansible.builtin.import_tasks: storage.yml
+
 ...

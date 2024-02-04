@@ -1,0 +1,34 @@
+---
+# Storage Daemon for interfacing with volumes
+
+- ansible.builtin.include_role:
+    name: robertdebock.bareos.bareos_sd
+  vars:
+    bareos_sd_devices:
+      - name: sidecar-sd
+        # this is an arbitrary name
+        media_type: S3_Object
+        # these two device names are NOT arbitrary
+        # https://docs.bareos.org/TasksAndConcepts/StorageBackends.html
+        archive_device: "AWS S3 Storage"
+        device_type: droplet
+        device_options: "profile=/etc/bareos/bareos-sd.d/device/droplet/{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_label }}.profile,bucket={{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_bucket_name }},chunksize={{ homeinfra_sidecar_bareos_config.cloud_storage_params.storage_chunk_bytes }}"
+        label_media: true
+        random_access: true
+        automatic_mount: true
+        removable_media: true
+        always_open: false
+        maximum_concurrent_jobs: 1
+
+    bareos_sd_s3_profiles:
+      - name: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_label }}"
+        host: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_host }}:443"
+        use_https: yes
+        access_key: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_access_key }}"
+        secret_key: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_secret_key }}"
+        pricing_dir: ""
+        backend: "s3"
+        aws_auth_sign_version: 4
+        aws_region: "us-east-1"
+
+...
