@@ -1,0 +1,76 @@
+---
+# Backup Archiving REcovery Open Sourced (bareos)
+
+- ansible.builtin.include_role:
+    name: robertdebock.roles.buildtools
+
+- ansible.builtin.include_role:
+    name: robertdebock.roles.python_pip
+
+- ansible.builtin.include_role:
+    name: robertdebock.roles.postgres
+
+- ansible.builtin.include_role:
+    name: robertdebock.bareos.bareos_repository
+  vars:
+    bareos_repository_type: community
+    bareos_repository_release: current
+
+- ansible.builtin.include_role:
+    name: robertdebock.bareos.bareos_dir
+  vars:
+    bareos_dir_hostname: "{{ ansible_fqdn }}"
+    bareos_dir_password: "{{ homeinfra_sidecar_bareos_config.director_password }}"
+    bareos_dir_catalogs:
+      - name: bareos-catalog
+        dbname: bareos
+        dbuser: bareos
+        dbpassword: "{{ homeinfra_sidecar_bareos_config.database_password }}"
+    bareos_dir_clients:
+      - name: sidecar-fd
+        address: 127.0.0.1
+        password: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_password }}"
+        maximum_concurrent_jobs: 1
+    bareos_dir_filesets:
+      - "{{ homeinfra_sidecar_bareos_config.sidecar_fd_fileset }}"
+    bareos_dir_jobs:
+      - name: sidecar-job
+        client: sidecar-fd
+        description: "Backup files from the NAS via Sidecar VM"
+        fileset: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_fileset.name }}"
+        messages: bareos-standard-msg
+        pool: bareos-cloud
+        type: Backup
+    bareos_dir_messages:
+      - name: bareos-standard-msg
+        description: "Send relevant messages to the Director."
+        append:
+          - file: "/var/log/bareos/bareos.log"
+            messages:
+              - all
+              - "!skipped"
+              - "!terminate"
+        catalog:
+          - all
+          - "!skipped"
+          - "!saved"
+          - "!audit"
+        console:
+          - all
+          - "!skipped"
+          - "!saved"
+    bareos_dir_pools:
+      - name: bareos-cloud
+        maximum_volume_bytes: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.pool_max_volume_bytes }}"
+        maximum_volumes: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.pool_max_volumes }}"
+        pool_type: Backup
+        storage: sidecar-sd
+    bareos_dir_storages:
+      - name: sidecar-sd
+        address: "127.0.0.1"
+        password: "{{ homeinfra_sidecar_bareos_config.sidecar_sd_password }}"
+        device: sidecar-sd-00
+        # this is an arbitrary name
+        media_type: S3_Object
+
+...

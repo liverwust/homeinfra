@@ -9,4 +9,8 @@
       ansible.builtin.import_role:
         name: us_wust.homeinfra.sidecar
 
+    - name: Run sidecar bareos VM tasks
+      ansible.builtin.import_role:
+        name: us_wust.homeinfra.sidecar_bareos
+
 ...
