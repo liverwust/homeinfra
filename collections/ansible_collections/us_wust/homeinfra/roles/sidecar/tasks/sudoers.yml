@@ -1,0 +1,36 @@
+---
+# Configure sudoers in a secure fashion
+# This is what /etc/sudoers says:
+## In the default (unconfigured) configuration, sudo asks for the root password.
+## This allows use of an ordinary user account for administration of a freshly
+## installed system. When configuring sudo, delete the two
+## following lines:
+
+- name: Add the connecting user to the wheel group
+  ansible.builtin.user:
+    append: true
+    groups: wheel
+    name: "{{ ansible_ssh_user }}"
+
+- name: Uncomment sudoers line to allow wheel sudoers
+  ansible.builtin.replace:
+    path: /etc/sudoers
+    regexp: '^#\s*(%wheel\s*ALL\s*=\s*\(ALL:ALL\)\s*ALL.*)$'
+    replace: '\1'
+
+- name: Comment-out sudoers line for targetpw
+  ansible.builtin.replace:
+    path: /etc/sudoers
+    regexp: '^(Defaults targetpw.*)$'
+    replace: '#\1'
+
+- name: Comment-out sudoers line for ALL specification
+  ansible.builtin.replace:
+    path: /etc/sudoers
+    regexp: '^(ALL\s*ALL\s*=\s*\(ALL\)\s*ALL.*)$'
+    replace: '#\1'
+
+- name: Avoid sudoers race condition by resetting the connection
+  ansible.builtin.meta: reset_connection
+
+...
