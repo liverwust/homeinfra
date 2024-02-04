@@ -3,12 +3,20 @@
   hosts: all
   become: true
   gather_facts: true
+  vars:
+    homeinfra_sidecar_hostname: testbox
+
   tasks:
+    # Make sure that Bacula and other services can resolve the hostname
+    - name: Insert a line into /etc/hosts for the VM
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ ansible_host }} {{ homeinfra_sidecar_hostname }}"
+
     - name: Run sidecar VM tasks
       ansible.builtin.import_role:
         name: us_wust.homeinfra.sidecar
       vars:
-        homeinfra_sidecar_hostname: testbox
         homeinfra_sidecar_ipv4:
           # pick the address reported / assigned by VMware Fusion, but
           # reconfigure it as static
