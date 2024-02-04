@@ -1,0 +1,13 @@
+---
+
+- name: Update packages to the latest version
+  ansible.builtin.package:
+    name: "*"
+    state: latest
+  register: sidecar_installed_packages
+
+- name: Reboot the system if packages were updated
+  ansible.builtin.reboot:
+  when: "sidecar_installed_packages is changed"
+
+...

@@ -5,4 +5,6 @@
 
 - ansible.builtin.import_tasks: hostname.yml
 
+- ansible.builtin.import_tasks: packages.yml
+
 ...
