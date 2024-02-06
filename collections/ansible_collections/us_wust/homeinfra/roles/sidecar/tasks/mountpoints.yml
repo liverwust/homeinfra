@@ -1,0 +1,24 @@
+---
+# Mount SMB shares from the QNAP itself
+
+- name: Ensure that the mountpoint destinations exist
+  ansible.builtin.file:
+    state: directory
+    path: "{{ homeinfra_sidecar_smb_item.destination }}"
+  loop_control:
+    loop_var: homeinfra_sidecar_smb_item
+  loop: "{{ homeinfra_sidecar_smb_mounts }}"
+
+- name: Mount SMB shares from the QNAP itself
+  ansible.posix.mount:
+    src: "//{{ homeinfra_sidecar_smb_mount_server }}/{{ homeinfra_sidecar_smb_item.source }}"
+    path: "{{ homeinfra_sidecar_smb_item.destination }}"
+    boot: true
+    fstype: smb3
+    state: mounted
+    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,username={{ homeinfra_sidecar_smb_username }},password={{ homeinfra_sidecar_smb_password }}"
+  loop_control:
+    loop_var: homeinfra_sidecar_smb_item
+  loop: "{{ homeinfra_sidecar_smb_mounts }}"
+
+...
