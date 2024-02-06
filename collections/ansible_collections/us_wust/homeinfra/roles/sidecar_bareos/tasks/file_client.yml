@@ -4,9 +4,12 @@
 - ansible.builtin.include_role:
     name: robertdebock.bareos.bareos_fd
   vars:
+    bareos_fd_hostname: "{{ ansible_fqdn }}"
     bareos_fd_tls_enable: no
     bareos_fd_tls_verify_peer: no
-    bareos_fd_encryption_enabled: false  # TODO
+    bareos_fd_encryption_enabled: true
+    bareos_fd_encryption_private_key: "{{ homeinfra_sidecar_bareos_config.pki_fd_private }}"
+    bareos_fd_encryption_master_public_key: "{{ homeinfra_sidecar_bareos_config.pki_master_public }}"
 
     bareos_fd_directors:
       - name: "{{ ansible_fqdn }}"
