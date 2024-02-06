@@ -35,4 +35,11 @@
         aws_auth_sign_version: 4
         aws_region: "us-east-2"
 
+    bareos_sd_directors:
+      - name: "{{ ansible_fqdn }}"
+        password: "{{ homeinfra_sidecar_bareos_config.sidecar_sd_password }}"
+        enabled: true
+        tls_enable: no
+        tls_verify_peer: no
+
 ...
