@@ -7,6 +7,8 @@
   vars:
     bareos_dir_hostname: "{{ ansible_fqdn }}"
     bareos_dir_password: "{{ homeinfra_sidecar_bareos_config.director_password }}"
+    bareos_dir_tls_enable: no
+    bareos_dir_tls_verify_peer: no
 
     bareos_dir_catalogs:
       - name: bareos-catalog
@@ -19,6 +21,8 @@
         address: 127.0.0.1
         password: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_password }}"
         maximum_concurrent_jobs: 1
+        tls_enable: no
+        tls_verify_peer: no
 
     bareos_dir_filesets:
       - "{{ homeinfra_sidecar_bareos_config.sidecar_fd_fileset }}"
@@ -57,6 +61,7 @@
         maximum_volume_bytes: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.pool_max_volume_bytes }}"
         maximum_volumes: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.pool_max_volumes }}"
         pool_type: Backup
+        label_format: "Cloud-"
 
     bareos_dir_storages:
       - name: sidecar-sd
@@ -77,7 +82,7 @@
         address: localhost
         password: "{{ homeinfra_sidecar_bareos_config.director_password }}"
         description: "Bareos Console credentials for local Director"
-        tls_enable: yes
+        tls_enable: no
         tls_verify_peer: no
 
 ...

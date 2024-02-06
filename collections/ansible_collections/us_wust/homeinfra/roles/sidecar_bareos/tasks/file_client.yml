@@ -4,10 +4,12 @@
 - ansible.builtin.include_role:
     name: robertdebock.bareos.bareos_fd
   vars:
+    bareos_fd_tls_enable: no
+    bareos_fd_tls_verify_peer: no
     bareos_fd_encryption_enabled: false  # TODO
 
     bareos_fd_directors:
-      - name: "bareos-dir"
+      - name: "{{ ansible_fqdn }}"
         password: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_password }}"
         monitor: no
         connection_from_client_to_director: no

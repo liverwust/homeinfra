@@ -4,10 +4,12 @@
 - ansible.builtin.include_role:
     name: robertdebock.bareos.bareos_sd
   vars:
+    bareos_sd_hostname: sidecar-sd
     bareos_sd_tls_enable: no
     bareos_sd_tls_verify_peer: no
+
     bareos_sd_devices:
-      - name: sidecar-sd
+      - name: sidecar-sd-00
         # this is an arbitrary name
         media_type: S3_Object
         # these two device names are NOT arbitrary
@@ -31,6 +33,6 @@
         pricing_dir: ""
         backend: "s3"
         aws_auth_sign_version: 4
-        aws_region: "us-east-1"
+        aws_region: "us-east-2"
 
 ...
