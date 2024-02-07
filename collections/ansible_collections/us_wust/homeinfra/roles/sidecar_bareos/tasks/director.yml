@@ -25,13 +25,22 @@
         tls_verify_peer: no
 
     bareos_dir_filesets:
-      - "{{ homeinfra_sidecar_bareos_config.sidecar_fd_fileset }}"
+      - name: sidecar-from-qnap
+        description: Various SMB-mounted dirs from the QNAP
+        include:
+          files: "{{ homeinfra_sidecar_smb_mounts | map(attribute='destination') | list }}"
+          options:
+            signature: XXH128
+            compression: LZ4
+        exclude:
+          # Append "/@Recently-Snapshot" to each SMB mountpoint
+          files: "{{ homeinfra_sidecar_smb_mounts | map(attribute='destination') | map('regex_replace', '$', '/@Recently-Snapshot') | list }}"
 
     bareos_dir_jobs:
       - name: sidecar-job
         client: sidecar-fd
         description: "Backup files from the NAS via Sidecar VM"
-        fileset: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_fileset.name }}"
+        fileset: sidecar-from-qnap
         messages: bareos-standard-msg
         pool: bareos-cloud
         storage: sidecar-sd
