@@ -18,7 +18,7 @@
 
     bareos_dir_clients:
       - name: sidecar-fd
-        address: 127.0.0.1
+        address: "{{ ansible_fqdn }}"
         password: "{{ homeinfra_sidecar_bareos_config.sidecar_fd_password }}"
         maximum_concurrent_jobs: 1
         tls_enable: no
@@ -74,7 +74,7 @@
 
     bareos_dir_storages:
       - name: sidecar-sd
-        address: "127.0.0.1"
+        address: "{{ ansible_fqdn }}"
         password: "{{ homeinfra_sidecar_bareos_config.sidecar_sd_password }}"
         device: sidecar-sd-00
         # this is an arbitrary name
