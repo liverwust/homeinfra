@@ -1,5 +1,15 @@
 ---
 
+- name: Install useful packages for troubleshooting, etc.
+  ansible.builtin.package:
+    name: "{{ homeinfra_sidecar_package }}"
+    state: present
+  loop_control:
+    loop_var: homeinfra_sidecar_package
+  loop:
+    - net-tools
+    - tcpdump
+
 - name: Update packages to the latest version
   ansible.builtin.package:
     name: "*"
