@@ -5,6 +5,8 @@
 
 - ansible.builtin.import_tasks: hostname.yml
 
+- ansible.builtin.import_tasks: firewall.yml
+
 - ansible.builtin.import_tasks: sudoers.yml
 
 - ansible.builtin.import_tasks: packages.yml
