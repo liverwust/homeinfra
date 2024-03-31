@@ -5,35 +5,19 @@
     name: robertdebock.bareos.bareos_sd
   vars:
     bareos_sd_hostname: sidecar-sd
+    # TODO: Fix this to enable client-initiated backup/restore over the Internet
     bareos_sd_tls_enable: no
     bareos_sd_tls_verify_peer: no
 
     bareos_sd_devices:
-      - name: sidecar-sd-00
-        # this is an arbitrary name
-        media_type: S3_Object
-        # these two device names are NOT arbitrary
-        # https://docs.bareos.org/TasksAndConcepts/StorageBackends.html
-        archive_device: "AWS S3 Storage"
-        device_type: droplet
-        device_options: "profile=/etc/bareos/bareos-sd.d/device/droplet/{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_label }}.profile,bucket={{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_bucket_name }},chunksize={{ homeinfra_sidecar_bareos_config.cloud_storage_params.storage_chunk_bytes }}"
+      - name: FileStorage
+        media_type: File
+        archive_device: /mnt/BareOS
         label_media: true
         random_access: true
         automatic_mount: true
-        removable_media: true
+        removable_media: false
         always_open: false
-        maximum_concurrent_jobs: 1
-
-    bareos_sd_s3_profiles:
-      - name: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_label }}"
-        host: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_host }}:443"
-        use_https: yes
-        access_key: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_access_key }}"
-        secret_key: "{{ homeinfra_sidecar_bareos_config.cloud_storage_params.s3_secret_key }}"
-        pricing_dir: ""
-        backend: "s3"
-        aws_auth_sign_version: 4
-        aws_region: "us-east-2"
 
     bareos_sd_directors:
       - name: "{{ ansible_fqdn }}"
@@ -41,5 +25,17 @@
         enabled: true
         tls_enable: no
         tls_verify_peer: no
+
+- name: Cleanup some extraneous/unwanted configuration files
+  ansible.builtin.file:
+    path: "/etc/bareos/bareos-sd.d/{{ homeinfra_sidecar_bareos_storage_file }}"
+    state: absent
+  loop:
+    - autochanger/autochanger-0.conf.example
+    - device/tapedrive-0.conf.example
+    - director/bareos-dir.conf
+  loop_control:
+    loop_var: homeinfra_sidecar_bareos_storage_file
+  notify: Restart bareos Storage service
 
 ...
