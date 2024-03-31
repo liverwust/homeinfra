@@ -32,6 +32,8 @@
         tls_enable: no
         tls_verify_peer: no
 
+    bareos_dir_clients: "{{ homeinfra_sidecar_bareos_config.clients | default([]) }}"
+
 - ansible.builtin.include_role:
     name: robertdebock.bareos.bareos_console
   vars:

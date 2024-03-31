@@ -43,6 +43,8 @@
     boot: true
     fstype: "{{ homeinfra_sidecar_iscsi_target.filesystem_type }}"
     state: mounted
+    # https://www.suse.com/support/kb/doc/?id=000019648
+    opts: "_netdev,x-systemd.requires=iscsi.service"
   loop_control:
     loop_var: homeinfra_sidecar_iscsi_target
   loop: "{{ homeinfra_sidecar_iscsi_targets }}"

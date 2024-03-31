@@ -2,12 +2,9 @@
 # Backup Archiving REcovery Open Sourced (bareos)
 
 - ansible.builtin.import_tasks: prerequisites.yml
-  tags: LWW_debug
 
 - ansible.builtin.import_tasks: director.yml
-  tags: LWW_debug
 
 - ansible.builtin.import_tasks: storage.yml
-  tags: LWW_debug
 
 ...

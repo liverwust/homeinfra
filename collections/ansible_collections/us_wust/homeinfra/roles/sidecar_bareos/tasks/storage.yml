@@ -12,7 +12,7 @@
     bareos_sd_devices:
       - name: FileStorage
         media_type: File
-        archive_device: /mnt/BareOS
+        archive_device: /mnt/BareOS/storage
         label_media: true
         random_access: true
         automatic_mount: true
