@@ -1,4 +1,8 @@
-STARTMODE=auto
-BOOTPROTO=static
-IPADDR_v4={{ homeinfra_sidecar_ipv4.address }}
-PREFIXLEN_v4={{ homeinfra_sidecar_ipv4.prefixlen }}
+{#- borrowed from -#}
+{#- https://github.com/ops-guru/vsphere_node_ansible_role/blob/b4af7f4381812db0477b61246f7c4bb51b49069b/templates/etc/sysconfig/network-scripts/ifcfg-current.j2#L7 -#}
+STARTMODE={{ homeinfra_sidecar_selected_adapter.startmode | default('auto') }}
+BOOTPROTO={{ homeinfra_sidecar_selected_adapter.bootproto | default('dhcp') }}
+{% if homeinfra_sidecar_selected_adapter.bootproto | default('dhcp') != "dhcp" -%}
+IPADDR_v4={{ homeinfra_sidecar_selected_adapter.address | mandatory }}
+PREFIXLEN_v4={{ homeinfra_sidecar_selected_adapter.prefixlen | mandatory }}
+{% endif -%}
