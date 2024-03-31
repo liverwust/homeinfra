@@ -7,7 +7,7 @@
     homeinfra_sidecar_hostname: testbox
 
   tasks:
-    # Make sure that Bacula and other services can resolve the hostname
+    # Make sure that bareos and other services can resolve the hostname
     - name: Insert a line into /etc/hosts for the VM
       ansible.builtin.lineinfile:
         path: /etc/hosts
@@ -19,17 +19,11 @@
       vars:
         homeinfra_sidecar_network_adapters:
           - primary: true
-            # pick the address reported / assigned by VMware Fusion, but
-            # reconfigure it as static
-            address: "{{ ansible_host }}"
-            macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_MAC_ADDRESS') }}"
-            # it always seems to be a /24; assume that
-            prefixlen: 24
-            # strip the last (host) octet, and replace it with a 2
-            # e.g., 192.168.45.67 -> 192.168.45.2
-            default_gateway: "{{ ansible_host | regex_replace(\"^(.*)\\.(.*)$\", \"\\1.2\") }}"
-            dns_servers:
-              - "{{ ansible_host | regex_replace(\"^(.*)\\.(.*)$\", \"\\1.2\") }}"
-            dns_searchlist: []
+            macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_PRIMARY_MAC_ADDRESS') }}"
+          - primary: false
+            macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_MAC_ADDRESS') }}"
+            bootproto: none
+            address: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_IP_ADDRESS') }}"
+            prefixlen: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_PREFIXLEN') }}"
 
 ...

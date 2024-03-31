@@ -9,6 +9,8 @@
   loop:
     - net-tools
     - tcpdump
+    - crc32csum
+    - tmux
 
 - name: Update packages to the latest version
   ansible.builtin.package:
