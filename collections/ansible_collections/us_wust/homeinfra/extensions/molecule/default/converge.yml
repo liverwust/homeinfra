@@ -20,7 +20,7 @@
         homeinfra_sidecar_network_adapters:
           - macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_PRIMARY_MAC_ADDRESS') }}"
           - macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_MAC_ADDRESS') }}"
-            bootproto: none
+            bootproto: static
             address: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_IP_ADDRESS') }}"
             prefixlen: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_PREFIXLEN') }}"
 
