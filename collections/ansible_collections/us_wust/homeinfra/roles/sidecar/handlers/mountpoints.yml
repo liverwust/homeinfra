@@ -1,0 +1,9 @@
+---
+# Handle changes related to mount points
+
+- name: Restart iscsi services
+  ansible.builtin.service:
+    name: iscsi.service
+    state: restarted
+
+...

@@ -21,6 +21,25 @@
     loop_var: homeinfra_sidecar_smb_item
   loop: "{{ homeinfra_sidecar_smb_mounts }}"
 
+- name: Save out the OpenSCSI authentication information to a persistent config file
+  ansible.builtin.replace:
+    path: /etc/iscsi/iscsid.conf
+    regexp: "^#?\\s*({{ homeinfra_sidecar_iscsi_auth.key }})(\\s*=\\s*).*$"
+    replace: "\\1\\2{{ homeinfra_sidecar_iscsi_auth.value }}"
+  loop:
+    - key: node.session.auth.username
+      value: "{{ homeinfra_sidecar_iscsi_target.node_user | default(omit) }}"
+    - key: node.session.auth.password
+      value: "{{ homeinfra_sidecar_iscsi_target.node_pass | default(omit) }}"
+    - key: node.session.auth.username_in
+      value: "{{ homeinfra_sidecar_iscsi_target.node_user_in | default(omit) }}"
+    - key: node.session.auth.password_in
+      value: "{{ homeinfra_sidecar_iscsi_target.node_pass_in | default(omit) }}"
+  loop_control:
+    loop_var: homeinfra_sidecar_iscsi_auth
+  when: "homeinfra_sidecar_iscsi_target is defined and homeinfra_sidecar_iscsi_auth.value is defined"
+  notify: Restart iscsi services
+
 - name: Set up openscsi initiators, if needed
   community.general.open_iscsi:
     auto_node_startup: "{{ homeinfra_sidecar_iscsi_target.auto_node_startup | default(true) }}"
@@ -32,9 +51,7 @@
     node_user_in: "{{ homeinfra_sidecar_iscsi_target.node_user_in | default(omit) }}"
     portal: "{{ homeinfra_sidecar_iscsi_target.portal | mandatory }}"
     target: "{{ homeinfra_sidecar_iscsi_target.target | mandatory }}"
-  loop: "{{ homeinfra_sidecar_iscsi_targets }}"
-  loop_control:
-    loop_var: homeinfra_sidecar_iscsi_target
+  when: "homeinfra_sidecar_iscsi_target is defined"
 
 - name: Mount the filesystem(s) inside the iSCSI block devices
   ansible.posix.mount:
@@ -45,8 +62,6 @@
     state: mounted
     # https://www.suse.com/support/kb/doc/?id=000019648
     opts: "_netdev,x-systemd.requires=iscsi.service"
-  loop_control:
-    loop_var: homeinfra_sidecar_iscsi_target
-  loop: "{{ homeinfra_sidecar_iscsi_targets }}"
+  when: "homeinfra_sidecar_iscsi_target is defined"
 
 ...

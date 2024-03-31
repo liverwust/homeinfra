@@ -1,6 +1,7 @@
 ---
 # tasks file for collections/ansible_collections/us_wust/roles/sidecar
 
+- ansible.builtin.import_tasks: mountpoints.yml
 - ansible.builtin.import_tasks: wicked.yml
 
 ...
