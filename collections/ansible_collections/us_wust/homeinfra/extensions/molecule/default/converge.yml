@@ -18,10 +18,8 @@
         name: us_wust.homeinfra.sidecar
       vars:
         homeinfra_sidecar_network_adapters:
-          - primary: true
-            macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_PRIMARY_MAC_ADDRESS') }}"
-          - primary: false
-            macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_MAC_ADDRESS') }}"
+          - macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_PRIMARY_MAC_ADDRESS') }}"
+          - macaddress: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_MAC_ADDRESS') }}"
             bootproto: none
             address: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_IP_ADDRESS') }}"
             prefixlen: "{{ lookup('env', 'HOMEINFRA_TEST_VM_SECONDARY_PREFIXLEN') }}"

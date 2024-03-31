@@ -11,9 +11,6 @@
   loop_control:
     loop_var: homeinfra_sidecar_interface_name
 
-- debug:
-    msg: "{{ homeinfra_sidecar_matched_interfaces.results }}"
-
 - name: Check that the specs entirely match the detected MAC addresses
   ansible.builtin.assert:
     that: >
@@ -35,10 +32,6 @@
          map(attribute='homeinfra_sidecar_addressed_interface') |
          items2dict(key_name='macaddress', value_name='name') }}
 
-- name: Pull out just the primary network adapter, for reference
-  ansible.builtin.set_fact:
-    homeinfra_sidecar_ipv4: "{{ homeinfra_sidecar_network_adapters | selectattr('primary') | first }}"
-
 - name: Write ifcfg network configuration file for each adapter
   ansible.builtin.template:
     src: "etc/sysconfig/network/ifcfg-IFNAME.j2"
@@ -48,35 +41,6 @@
   loop_control:
     loop_var: homeinfra_sidecar_selected_adapter
   notify: wicked ifreload (if this fails, check the IP address)
-
-- name: Write ifcfg network information for default gateway
-  ansible.builtin.copy:
-    content: |
-      default  {{ homeinfra_sidecar_ipv4.default_gateway }}  0.0.0.0  {{ homeinfra_sidecar_addressed_interfaces[homeinfra_sidecar_ipv4.macaddress] }}
-    dest: /etc/sysconfig/network/routes
-    backup: yes
-  when: "homeinfra_sidecar_selected_adapter.bootproto | default('dhcp') != 'dhcp'"
-  notify: wicked ifreload (if this fails, check the IP address)
-
-- name: Write ifcfg netconfig information for DNS resolution
-  ansible.builtin.lineinfile:
-    path: /etc/sysconfig/network/config
-    regexp: "^({{ homeinfra_sidecar_wicked_config.name }})=\"([^\"]*)\"$"
-    line: "{{ homeinfra_sidecar_wicked_config.name }}=\"{{ homeinfra_sidecar_wicked_config.value }}\""
-    backup: yes
-  loop:
-    - name: NETCONFIG_DNS_POLICY
-      value: STATIC
-    - name: NETCONFIG_DNS_FORWARDER
-      value: resolver
-    - name: NETCONFIG_DNS_STATIC_SEARCHLIST
-      value: "{{ homeinfra_sidecar_ipv4.dns_searchlist | default([]) | join(' ') }}"
-    - name: NETCONFIG_DNS_STATIC_SERVERS
-      value: "{{ homeinfra_sidecar_ipv4.dns_servers | default([]) | join(' ') }}"
-  loop_control:
-    loop_var: homeinfra_sidecar_wicked_config
-  when: "homeinfra_sidecar_selected_adapter.bootproto | default('dhcp') != 'dhcp'"
-  notify: netconfig update (if this fails, check the IP address)
 
 - name: Flush handlers before continuing
   ansible.builtin.meta: flush_handlers
