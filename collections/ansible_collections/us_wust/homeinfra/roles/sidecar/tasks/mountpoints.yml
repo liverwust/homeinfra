@@ -4,10 +4,10 @@
 - name: Ensure that the mountpoint destinations exist
   ansible.builtin.file:
     state: directory
-    path: "{{ homeinfra_sidecar_smb_item.destination }}"
+    path: "{{ homeinfra_sidecar_nfs_item.destination }}"
   loop_control:
-    loop_var: homeinfra_sidecar_smb_item
-  loop: "{{ homeinfra_sidecar_smb_mounts }}"
+    loop_var: homeinfra_sidecar_nfs_item
+  loop: "{{ homeinfra_sidecar_smb_mounts|default([]) + homeinfra_sidecar_iscsi_targets|default([]) }}"
 
 - name: Mount SMB shares from the QNAP itself
   ansible.posix.mount:
@@ -35,5 +35,16 @@
   loop: "{{ homeinfra_sidecar_iscsi_targets }}"
   loop_control:
     loop_var: homeinfra_sidecar_iscsi_target
+
+- name: Mount the filesystem(s) inside the iSCSI block devices
+  ansible.posix.mount:
+    src: "LABEL=\"{{ homeinfra_sidecar_iscsi_target.filesystem_label }}\""
+    path: "{{ homeinfra_sidecar_iscsi_target.destination }}"
+    boot: true
+    fstype: "{{ homeinfra_sidecar_iscsi_target.filesystem_type }}"
+    state: mounted
+  loop_control:
+    loop_var: homeinfra_sidecar_iscsi_target
+  loop: "{{ homeinfra_sidecar_iscsi_targets }}"
 
 ...
