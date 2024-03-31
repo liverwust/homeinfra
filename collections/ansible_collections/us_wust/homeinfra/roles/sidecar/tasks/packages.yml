@@ -11,6 +11,7 @@
     - tcpdump
     - crc32csum
     - tmux
+    - open-iscsi
 
 - name: Update packages to the latest version
   ansible.builtin.package:

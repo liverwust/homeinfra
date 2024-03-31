@@ -1,5 +1,5 @@
 ---
-# Mount SMB shares from the QNAP itself
+# Mount SMB and iSCSI shares from the QNAP itself
 
 - name: Ensure that the mountpoint destinations exist
   ansible.builtin.file:
@@ -20,5 +20,20 @@
   loop_control:
     loop_var: homeinfra_sidecar_smb_item
   loop: "{{ homeinfra_sidecar_smb_mounts }}"
+
+- name: Set up openscsi initiators, if needed
+  community.general.open_iscsi:
+    auto_node_startup: "{{ homeinfra_sidecar_iscsi_target.auto_node_startup | default(true) }}"
+    auto_portal_startup: "{{ homeinfra_sidecar_iscsi_target.auto_portal_startup | default(true) }}"
+    login: "{{ homeinfra_sidecar_iscsi_target.login | default(true) }}"
+    node_pass: "{{ homeinfra_sidecar_iscsi_target.node_pass | default(omit) }}"
+    node_pass_in: "{{ homeinfra_sidecar_iscsi_target.node_pass_in | default(omit) }}"
+    node_user: "{{ homeinfra_sidecar_iscsi_target.node_user | default(omit) }}"
+    node_user_in: "{{ homeinfra_sidecar_iscsi_target.node_user_in | default(omit) }}"
+    portal: "{{ homeinfra_sidecar_iscsi_target.portal | mandatory }}"
+    target: "{{ homeinfra_sidecar_iscsi_target.target | mandatory }}"
+  loop: "{{ homeinfra_sidecar_iscsi_targets }}"
+  loop_control:
+    loop_var: homeinfra_sidecar_iscsi_target
 
 ...
