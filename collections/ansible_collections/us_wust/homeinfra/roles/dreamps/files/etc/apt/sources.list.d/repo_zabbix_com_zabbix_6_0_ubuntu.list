@@ -1,0 +1,2 @@
+deb-src http://repo.zabbix.com/zabbix/6.0/ubuntu/ jammy main
+deb http://repo.zabbix.com/zabbix/6.0/ubuntu/ jammy main

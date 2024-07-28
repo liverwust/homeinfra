@@ -1,0 +1,2 @@
+deb http://apt.dreamcompute.com/ jammy main
+deb http://apt.dreamcompute.com/ ndn-jammy ndn-jammy
