@@ -1,17 +1,4 @@
 ---
 # tasks file for dreamps
 
-- name: Copy /etc/apt/sources.list and parts
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "/{{ item }}"
-    backup: false
-  loop:
-    - etc/apt/sources.list
-    - etc/apt/sources.list.d/apt_dreamcompute_com.list
-    - etc/apt/sources.list.d/apt_dreamcompute_com_nginx_mainline.list
-    - etc/apt/sources.list.d/apt_dreamcompute_com_openresty.list
-    - etc/apt/sources.list.d/repo_zabbix_com_zabbix_6_0_ubuntu.list
-    - etc/apt/sources.list.d/repo_zabbix_com_zabbix_6_4_ubuntu.list
-
 ...
