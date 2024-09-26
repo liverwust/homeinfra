@@ -1,0 +1,17 @@
+name: ddns-updater
+version: "3"
+services:
+  ddns-updater:
+    image: qmcgaw/ddns-updater
+    container_name: ddns-updater
+    volumes:
+      - ddns_data:/updater/data
+      - /share/CE_CACHEDEV5_DATA/Secrets/ddns-updater/config:/updater/config
+    environment:
+      - PERIOD=1h
+      - HTTP_TIMEOUT=10s
+      - SERVER_ENABLED=no
+      - CONFIG_FILEPATH=/updater/config/config.json
+    restart: on-failure:3
+volumes:
+  ddns_data:
