@@ -1,4 +1,4 @@
-name: ddns-updater
+name: qnap-nas
 version: "3"
 services:
   ddns-updater:
