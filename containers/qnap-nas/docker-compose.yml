@@ -7,7 +7,7 @@ services:
     container_name: ddns-updater
     volumes:
       - ddns_data:/updater/data
-      - /share/CE_CACHEDEV5_DATA/Secrets/ddns-updater/config:/updater/config
+      - ddns_config:/updater/config
     environment:
       - PERIOD=1h
       - HTTP_TIMEOUT=10s
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     volumes:
       - nginx_data:/etc/nginx/conf.d
-      - /share/CE_CACHEDEV5_DATA/Secrets/letsencrypt:/etc/letsencrypt
+      - letsencrypt:/etc/letsencrypt
       - nginx_www:/var/www
     ports:
       - "10080:80"
@@ -33,11 +33,18 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
-      - /share/CE_CACHEDEV5_DATA/Secrets/letsencrypt:/etc/letsencrypt
+      - letsencrypt:/etc/letsencrypt
       - nginx_www:/var/www
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
+  ddns_config:
+    external: true
   ddns_data:
+    external: true
+  letsencrypt:
+    external: true
   nginx_data:
+    external: true
   nginx_www:
+    external: true
