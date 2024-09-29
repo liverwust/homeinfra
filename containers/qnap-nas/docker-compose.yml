@@ -15,6 +15,7 @@ services:
       - CONFIG_FILEPATH=/updater/config/config.json
     restart: on-failure:3
 
+  # https://github.com/wmnnd/nginx-certbot
   nginx:
     image: nginx:1.15-alpine
     restart: unless-stopped
@@ -27,6 +28,7 @@ services:
       - "10443:443"
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
+  # https://github.com/wmnnd/nginx-certbot
   certbot:
     image: certbot/certbot
     restart: unless-stopped
