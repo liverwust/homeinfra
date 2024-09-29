@@ -20,7 +20,7 @@ services:
     image: nginx:1.15-alpine
     restart: unless-stopped
     volumes:
-      - nginx_data:/etc/nginx/conf.d
+      - nginx_confd:/etc/nginx/conf.d
       - letsencrypt:/etc/letsencrypt
       - nginx_www:/var/www
     ports:
@@ -44,7 +44,7 @@ volumes:
     external: true
   letsencrypt:
     external: true
-  nginx_data:
+  nginx_confd:
     external: true
   nginx_www:
     external: true
