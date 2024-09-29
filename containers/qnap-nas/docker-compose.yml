@@ -1,5 +1,6 @@
 name: qnap-nas
 version: "3"
+
 services:
   ddns-updater:
     image: qmcgaw/ddns-updater
@@ -13,5 +14,26 @@ services:
       - SERVER_ENABLED=no
       - CONFIG_FILEPATH=/updater/config/config.json
     restart: on-failure:3
+
+  nginx:
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    volumes:
+      - nginx_data:/etc/nginx/conf.d
+      - /share/CE_CACHEDEV5_DATA/Secrets/letsencrypt:/etc/letsencrypt
+      - /share/CE_CACHEDEV5_DATA/Secrets/nginx/www:/var/www/certbot
+    ports:
+      - "10080:80"
+      - "10443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - /share/CE_CACHEDEV5_DATA/Secrets/letsencrypt:/etc/letsencrypt
+      - /share/CE_CACHEDEV5_DATA/Secrets/nginx/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 volumes:
   ddns_data:
