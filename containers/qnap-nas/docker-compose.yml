@@ -29,13 +29,13 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   # https://github.com/wmnnd/nginx-certbot
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - nginx_www:/var/www
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+#  certbot:
+#    image: certbot/certbot
+#    restart: unless-stopped
+#    volumes:
+#      - letsencrypt:/etc/letsencrypt
+#      - nginx_www:/var/www
+#    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
   ddns_config:
