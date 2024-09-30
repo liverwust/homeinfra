@@ -16,8 +16,8 @@ from typing import List
 
 OPTIONS_SSL_NGINX = '/etc/letsencrypt/conf/options-ssl-nginx.conf'
 SSL_DHPARAMS = '/etc/letsencrypt/conf/ssl-dhparams.pem'
-PRIV_KEY = '/etc/letsencrypt/live/{0}/privkey.temp.key'
-PUB_CERT = '/etc/letsencrypt/live/{0}/fullchain.temp.pem'
+PRIV_KEY = '/etc/letsencrypt/live/{0}/privkey{1}.key'
+PUB_CERT = '/etc/letsencrypt/live/{0}/fullchain{1}.pem'
 SOURCE_CONF = '/usr/src/app'
 DEST_CONF = '/etc/nginx/conf.d/{0}.conf'
 
@@ -29,9 +29,14 @@ if __name__ == "__main__":
     rsa_key_size: int = int(rsa_key_size_env)
     updater_key: str = os.getenv('QNAP_NAS_DREAMHOST_KEY', default='')
 
+    suffix: str = None
     if not mode in ['initialize', 'production']:
         raise ValueError('set QNAP_NAS_SETUP_MODE to either '
                          '"initialize" or "production"')
+    elif mode == 'initialize':
+        suffix = '.temp'
+    elif mode == 'production':
+        suffix = ''
 
     if mode == 'initialize':
         os.makedirs(os.path.dirname(OPTIONS_SSL_NGINX), exist_ok=True)
@@ -65,7 +70,7 @@ if __name__ == "__main__":
 
         if mode == 'initialize':
             print(f"### Creating dummy certificate for {domain} ...")
-            os.makedirs(os.path.dirname(PRIV_KEY.format(domain)),
+            os.makedirs(os.path.dirname(PRIV_KEY.format(domain, suffix)),
                         exist_ok=True)
 
             # https://cryptography.io/en/latest/x509/tutorial/#creating-a-self-signed-certificate
@@ -75,7 +80,7 @@ if __name__ == "__main__":
                     key_size=rsa_key_size
             )
 
-            with open(PRIV_KEY.format(domain), 'wb') as f:
+            with open(PRIV_KEY.format(domain, suffix), 'wb') as f:
                 f.write(key.private_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PrivateFormat.TraditionalOpenSSL,
@@ -103,21 +108,17 @@ if __name__ == "__main__":
                     critical=False,
             ).sign(key, hashes.SHA256())
 
-            with open(PUB_CERT.format(domain), "wb") as f:
+            with open(PUB_CERT.format(domain, suffix), "wb") as f:
                 f.write(cert.public_bytes(serialization.Encoding.PEM))
 
         print(f"### Creating nginx configuration for {domain} ...")
-
-        suffix: str = None
-        if mode == 'initialize':
-            suffix = '.temp'
-        elif mode == 'production':
-            suffix = ''
 
         env = Environment(loader=FileSystemLoader(SOURCE_CONF))
         template = env.get_template('domain.conf.j2')
         with open(DEST_CONF.format(domain), 'w') as f:
             f.write(template.render(
                     domain=domain,
-                    suffix=suffix
+                    suffix=suffix,
+                    pubkey_cert=PUB_CERT.format(domain, suffix),
+                    privkey=PRIV_KEY.format(domain, suffix)
             ))

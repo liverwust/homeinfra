@@ -17,8 +17,8 @@ server {
     server_name {{ domain }};
     server_tokens off;
 
-    ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain{{ suffix }}.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey{{ suffix }}.pem;
+    ssl_certificate {{ pubkey_cert }};
+    ssl_certificate_key {{ privkey }};
     include /etc/letsencrypt/conf/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/conf/ssl-dhparams.pem;
 

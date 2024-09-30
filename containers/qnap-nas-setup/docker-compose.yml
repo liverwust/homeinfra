@@ -10,8 +10,8 @@ services:
       - letsencrypt:/etc/letsencrypt
       - nginx_confd:/etc/nginx/conf.d
     environment:
-      #QNAP_NAS_SETUP_MODE: initialize
-      QNAP_NAS_SETUP_MODE: production
+      QNAP_NAS_SETUP_MODE: initialize
+      #QNAP_NAS_SETUP_MODE: production
       QNAP_NAS_DOMAINS: 'example.com:www.example.com'
 
 volumes:
