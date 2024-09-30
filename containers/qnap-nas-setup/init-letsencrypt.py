@@ -16,7 +16,7 @@ from typing import List
 
 OPTIONS_SSL_NGINX = '/etc/letsencrypt/conf/options-ssl-nginx.conf'
 SSL_DHPARAMS = '/etc/letsencrypt/conf/ssl-dhparams.pem'
-PRIV_KEY = '/etc/letsencrypt/live/{0}/privkey{1}.key'
+PRIV_KEY = '/etc/letsencrypt/live/{0}/privkey{1}.pem'
 PUB_CERT = '/etc/letsencrypt/live/{0}/fullchain{1}.pem'
 SOURCE_CONF = '/usr/src/app'
 DEST_CONF = '/etc/nginx/conf.d/{0}.conf'
