@@ -1,6 +1,8 @@
 name: qnap-nas-setup
 version: "3"
 
+# Be sure to update QNAP_NAS_SETUP_MODE for both containers
+
 services:
   qnap-nas-setup:
     image: liverwust/qnap-nas-setup:5
@@ -10,9 +12,24 @@ services:
       - letsencrypt:/etc/letsencrypt
       - nginx_confd:/etc/nginx/conf.d
     environment:
-      QNAP_NAS_SETUP_MODE: initialize
-      #QNAP_NAS_SETUP_MODE: production
+      #QNAP_NAS_SETUP_MODE: initialize
+      QNAP_NAS_SETUP_MODE: production
       QNAP_NAS_DOMAINS: 'example.com:www.example.com'
+
+  # You should only run this AFTER running with initialize once
+  # Comment-out this entire service otherwise
+  issue-first-certbot:
+    image: certbot/certbot:latest
+    container_name: issue-first-certbot
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - nginx_www:/var/www
+    # Remember to edit the domains, email, and remove --staging
+    entrypoint: >-
+      /bin/sh -c "mkdir -p /var/www/certbot &&
+      certbot certonly --webroot -w /var/www/certbot --staging
+      --agree-tos --force-renewal -d example.com -d www.example.com
+      --email sample@example.com --verbose"
 
 volumes:
   ddns_config:
@@ -20,4 +37,6 @@ volumes:
   letsencrypt:
     external: true
   nginx_confd:
+    external: true
+  nginx_www:
     external: true
