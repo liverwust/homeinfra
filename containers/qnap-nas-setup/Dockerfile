@@ -10,5 +10,6 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY init-letsencrypt.py ./
+COPY domain.conf.j2 ./
 
 CMD [ "python", "./init-letsencrypt.py" ]

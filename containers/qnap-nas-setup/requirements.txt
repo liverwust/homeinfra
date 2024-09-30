@@ -1,2 +1,3 @@
 cryptography
+Jinja2
 requests
