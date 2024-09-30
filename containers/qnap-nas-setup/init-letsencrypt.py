@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 # https://github.com/wmnnd/nginx-certbot
 
-from cryptography import rsa, x509
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.x509.oid import NameOID
 import datetime
 import os
 import os.path
@@ -15,9 +18,11 @@ PUB_CERT = '/etc/letsencrypt/live/{0}/fullchain.temp.pem'
 
 if __name__ == "__main__":
     domain_env: str = os.getenv('QNAP_NAS_DOMAINS', default='')
-    domains: List[str] = domain_str.split(':')
+    domains: List[str] = domain_env.split(':')
     rsa_key_size_env: str = os.getenv('QNAP_NAS_KEY_SIZE', default='4096')
     rsa_key_size: int = int(rsa_key_size_env)
+
+    os.makedirs(os.path.dirname(OPTIONS_SSL_NGINX), exist_ok=True)
 
     print('### Downloading recommended TLS parameters ...')
     resp = requests.get('https://raw.githubusercontent.com/certbot/'
@@ -33,7 +38,7 @@ if __name__ == "__main__":
 
     for domain in domains:
         print(f"### Creating dummy certificate for {domain} ...")
-        os.makedirs(os.path.dirname(PRIV_KEY.format(domain)))
+        os.makedirs(os.path.dirname(PRIV_KEY.format(domain)), exist_ok=True)
 
         # https://cryptography.io/en/latest/x509/tutorial/#creating-a-self-signed-certificate
 
@@ -45,7 +50,8 @@ if __name__ == "__main__":
         with open(PRIV_KEY.format(domain), 'wb') as f:
             f.write(key.private_bytes(
                 encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption()
             ))
 
         subject = issuer = x509.Name([

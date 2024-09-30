@@ -1,3 +1,21 @@
 name: qnap-nas-setup
 version: "3"
 
+services:
+  qnap-nas-setup:
+    image: liverwust/qnap-nas-setup:2
+    container_name: qnap-nas-setup
+    volumes:
+      - ddns_config:/updater/config
+      - letsencrypt:/etc/letsencrypt
+      - nginx_confd:/etc/nginx/conf.d
+    environment:
+      QNAP_NAS_DOMAINS: 'example.com:www.example.com'
+
+volumes:
+  ddns_config:
+    external: true
+  letsencrypt:
+    external: true
+  nginx_confd:
+    external: true
