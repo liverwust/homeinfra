@@ -7,6 +7,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
 import datetime
 from jinja2 import Environment, FileSystemLoader
+import json
 import os
 import os.path
 import requests
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     domains: List[str] = domain_env.split(':')
     rsa_key_size_env: str = os.getenv('QNAP_NAS_KEY_SIZE', default='4096')
     rsa_key_size: int = int(rsa_key_size_env)
+    updater_key: str = os.getenv('QNAP_NAS_DREAMHOST_KEY', default='')
 
     if not mode in ['initialize', 'production']:
         raise ValueError('set QNAP_NAS_SETUP_MODE to either '
@@ -45,6 +47,19 @@ if __name__ == "__main__":
                             'certbot/master/certbot/certbot/ssl-dhparams.pem')
         with open(SSL_DHPARAMS, 'w') as f:
             f.write(resp.text)
+
+        print('### Generating JSON configuration for updater DDNS ...')
+        initialize_obj = { 'settings': [] }
+        for domain in domains:
+            initialize_obj['settings'].append({
+                    'provider': 'dreamhost',
+                    'domain': domain,
+                    'key': updater_key,
+                    'ip_version': 'ipv4',
+                    'ipv6_suffix': ''
+            })
+        with open('/updater/config/config.json', 'w') as f:
+            json.dump(initialize_obj, f)
 
     for domain in domains:
 
