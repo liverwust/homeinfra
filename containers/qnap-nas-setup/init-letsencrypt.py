@@ -30,14 +30,14 @@ if __name__ == "__main__":
     existing_options_nginx = False
     try:
         options_nginx_stat = os.lstat(OPTIONS_SSL_NGINX)
-        existing_options_nginx = stat.S_ISREG(options_nginx_stat)
+        existing_options_nginx = stat.S_ISREG(options_nginx_stat.st_mode)
     except FileNotFoundError:
         existing_options_nginx = False
 
     existing_dhparams = False
     try:
         dhparams_stat = os.lstat(SSL_DHPARAMS)
-        existing_dhparams = stat.S_ISREG(dhparams_stat)
+        existing_dhparams = stat.S_ISREG(dhparams_stat.st_mode)
     except FileNotFoundError:
         existing_dhparams = False
 
