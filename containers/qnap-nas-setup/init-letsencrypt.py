@@ -27,10 +27,21 @@ if __name__ == "__main__":
     os.makedirs(os.path.dirname(OPTIONS_SSL_NGINX), exist_ok=True)
     os.makedirs("/var/www/certbot", exist_ok=True)
 
-    existing_options_nginx = os.lstat(OPTIONS_SSL_NGINX)
-    existing_dhparams = os.lstat(SSL_DHPARAMS)
-    if not (stat.S_ISREG(existing_options_nginx.st_mode) and
-            stat.S_ISREG(existing_dhparams.st_mode)):
+    existing_options_nginx = False
+    try:
+        options_nginx_stat = os.lstat(OPTIONS_SSL_NGINX)
+        existing_options_nginx = stat.S_ISREG(options_nginx_stat)
+    except FileNotFoundError:
+        existing_options_nginx = False
+
+    existing_dhparams = False
+    try:
+        dhparams_stat = os.lstat(SSL_DHPARAMS)
+        existing_dhparams = stat.S_ISREG(dhparams_stat)
+    except FileNotFoundError:
+        existing_dhparams = False
+
+    if not (existing_options_nginx and existing_dhparams):
         print('### Downloading recommended TLS parameters ...')
         resp = requests.get('https://raw.githubusercontent.com/certbot/'
                             'certbot/master/certbot-nginx/certbot_nginx/'
@@ -45,6 +56,12 @@ if __name__ == "__main__":
 
     print('### Generating JSON configuration for updater DDNS ...')
     initialize_obj = { 'settings': [] }
+
+    # Keep track of the "primary domain," which is 1st in the various lists
+    # and will represent the CN for the LetsEncrypt certificate. All other
+    # names are SANs.
+    primary_domain = domains[0]
+
     for domain in domains:
         initialize_obj['settings'].append({
                 'provider': 'dreamhost',
@@ -62,4 +79,7 @@ if __name__ == "__main__":
         env = Environment(loader=FileSystemLoader(SOURCE_CONF))
         template = env.get_template(f'{template_env}.conf.j2')
         with open(DEST_CONF.format(domain), 'w') as f:
-            f.write(template.render(domain=domain))
+            f.write(template.render(
+                    domain=domain,
+                    primary_domain=primary_domain
+            ))
