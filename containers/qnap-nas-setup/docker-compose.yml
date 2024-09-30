@@ -3,7 +3,7 @@ version: "3"
 
 services:
   qnap-nas-setup:
-    image: liverwust/qnap-nas-setup:4
+    image: liverwust/qnap-nas-setup:5
     container_name: qnap-nas-setup
     volumes:
       - ddns_config:/updater/config
