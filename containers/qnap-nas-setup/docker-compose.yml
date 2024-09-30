@@ -3,7 +3,7 @@ version: "3"
 
 services:
   init-letsencrypt:
-    image: liverwust/qnap-nas-setup:8
+    image: liverwust/qnap-nas-setup:11
     container_name: qnap-nas-setup
     volumes:
       - ddns_config:/updater/config
