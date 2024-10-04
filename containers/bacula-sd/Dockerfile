@@ -1,5 +1,6 @@
 FROM debian:bookworm
 
+ENV DEBIAN_FRONTEND=noninteractive
 ENV BACULA_VERSION=13.0.4
 # Set BACULA_CUSTOMER from the calling shell like this:
 # BACULA_CUSTOMER=xxx docker build --secret id=BACULA_CUSTOMER .
@@ -28,10 +29,8 @@ RUN --mount=type=secret,id=BACULA_CUSTOMER,required=true \
 # Once done, you can update the repository list with the following command.
 RUN apt-get update
 
-# If you have not previously install the database server, do so with:
-RUN apt-get install -y dbconfig-common postgresql
-
 # Then install the Bacula with PostgreSQL driver with:
 RUN apt-get install -y bacula-postgresql
 
-CMD /bin/bash
+CMD ["-dt", "-c", "/opt/bacula/etc/bacula-sd.conf"]
+ENTRYPOINT ["/opt/bacula/bin/bacula-sd"]
