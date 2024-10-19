@@ -1,0 +1,19 @@
+---
+services:
+  onetime_pull:
+    image: liverwust/onetime-pull:1.0.0
+    restart: no
+    environment:
+      HOSTNAME: sample.com
+      USERNAME: testuser
+      FILE__PASSWORD: /run/secrets/onetime_pull
+    cap_add:
+      - SYS_ADMIN
+    secrets:
+      - onetime_pull
+    volumes:
+      - /path/to/destination:/mnt/dest
+
+secrets:
+  onetime_pull:
+    file: /path/to/password.txt
