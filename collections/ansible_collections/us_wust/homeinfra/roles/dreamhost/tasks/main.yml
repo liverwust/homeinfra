@@ -1,4 +1,20 @@
 ---
 # tasks file for dreamhost
 
+- name: Ensure directory tree
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.config/systemd/user"
+    mode: '0755'
+    state: directory
+
+- name: Copy sample unit file
+  ansible.builtin.copy:
+    src: config/systemd/user/tryme.service
+    dest: "{{ ansible_user_dir }}/.config/systemd/user/tryme.service"
+    mode: '0644'
+  notify: Reload user systemd
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
 ...
