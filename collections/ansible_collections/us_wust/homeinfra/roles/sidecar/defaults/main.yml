@@ -1,7 +1,0 @@
----
-# Default values for sidecar role
-
-# mountpoints.yml
-homeinfra_sidecar_smb_mounts: []
-
-...

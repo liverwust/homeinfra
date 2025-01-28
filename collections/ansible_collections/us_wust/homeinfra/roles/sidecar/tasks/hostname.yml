@@ -1,7 +1,0 @@
----
-
-- name: "Set the system's hostname"
-  ansible.builtin.hostname:
-    name: "{{ homeinfra_sidecar_hostname }}"
-
-...
