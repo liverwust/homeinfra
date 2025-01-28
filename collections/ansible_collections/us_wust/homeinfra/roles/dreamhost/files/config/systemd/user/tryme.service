@@ -6,5 +6,4 @@
 Description=Sample persistent process
 
 [Service]
-Type=oneshot
-ExecStart=/bin/bash -c "sleep 60000"
+ExecStart=sleep 60000
