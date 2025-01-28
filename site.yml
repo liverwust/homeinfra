@@ -2,7 +2,7 @@
 
 - name: Apply DreamHost Server configuration
   hosts: dreamhost_servers
-  become: true
+  become: false
   gather_facts: true
   roles:
     - us_wust.homeinfra.dreamhost
