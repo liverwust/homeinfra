@@ -17,10 +17,4 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: In lieu of per-user enablement, run a cronjob to start the service periodically
-  ansible.builtin.cron:
-    name: Start tryme.service if not already running
-    minute: "*/5"
-    job: "systemctl --user start tryme.service"
-
 ...
