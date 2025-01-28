@@ -1,8 +1,8 @@
-us\_wust.homeinfra.dreamps
-==========================
+us\_wust.homeinfra.dreamhost
+============================
 
-Configure my DreamHost dedicated/physical server and/or its clone in a
-KVM staging environment.
+Configure my DreamHost dedicated/virtual server and/or its clone in a KVM
+staging environment.
 
 Requirements
 ------------

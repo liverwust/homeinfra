@@ -1,10 +1,10 @@
 ---
 
-- name: Apply DreamHost Dedicated Server configuration
-  hosts: dreamps
+- name: Apply DreamHost Server configuration
+  hosts: dreamhost_servers
   become: true
   gather_facts: true
   roles:
-    - us_wust.homeinfra.dreamps
+    - us_wust.homeinfra.dreamhost
 
 ...
