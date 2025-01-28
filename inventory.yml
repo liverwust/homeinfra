@@ -1,0 +1,5 @@
+all:
+  children:
+    dreamhost_servers:
+      hosts:
+        dreamhost_vps:

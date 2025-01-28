@@ -1,0 +1,10 @@
+---
+# Variables for my DreamHost VPS
+
+# Secret named "dreamhost_vps_hostname"
+ansible_host: "{{ lookup('bitwarden.secrets.lookup', '75707beb-feef-44da-9c63-b27300cc4e70') }}"
+
+# Secret named "dreamhost_vps_username"
+ansible_user: "{{ lookup('bitwarden.secrets.lookup', '53f86942-9142-46a3-b157-b27300ccf3f7') }}"
+
+# Calling user is expected to have configured SSH keys with ssh-copy-id

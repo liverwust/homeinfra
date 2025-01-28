@@ -1,5 +1,6 @@
 ---
 collections:
   - us_wust.homeinfra
+  - bitwarden.secrets
 
 ...
