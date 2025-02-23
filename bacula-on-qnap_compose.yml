@@ -1,0 +1,31 @@
+---
+name: bacula-on-qnap
+
+services:
+  # https://hub.docker.com/_/postgres
+  database:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    secrets:
+      - postgres-password
+
+volumes:
+  database-data:
+
+secrets:
+  # The superuser password for the postgresql database. This file does not need
+  # to contain any data after the database container initializes its data
+  # volume, so please empty it with the following command when ready:
+  #
+  #     : > /path/to/postgres-password.txt
+  #
+  # Note: with Docker Desktop, it is necessary to add one of these parent
+  # directories to the list of File Sharing locations:
+  # https://docs.docker.com/desktop/settings-and-maintenance/settings/#file-sharing
+  postgres-password:
+    file: /share/Container/user-config/postgres-password.txt
