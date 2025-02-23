@@ -11,6 +11,7 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
     volumes:
       - database-data:/var/lib/postgresql/data
+      - /share/Container/user-config/database/initdb.d:/docker-entrypoint-initdb.d:ro
     secrets:
       - postgres-password
 
@@ -28,4 +29,4 @@ secrets:
   # directories to the list of File Sharing locations:
   # https://docs.docker.com/desktop/settings-and-maintenance/settings/#file-sharing
   postgres-password:
-    file: /share/Container/user-config/postgres-password.txt
+    file: /share/Container/user-config/database/postgres-password.txt

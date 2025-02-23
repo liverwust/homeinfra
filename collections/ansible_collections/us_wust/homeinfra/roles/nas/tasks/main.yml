@@ -1,5 +1,18 @@
 ---
 # Entry point for us_wust.homeinfra.nas role
 
+- name: Create directory structure for container configurations
+  ansible.builtin.file:
+    path: "{{ nas_container_folder }}/{{ item }}"
+    state: directory
+    mode: "0700"
+  loop:
+    - user-config
+    - user-config/database
+    - user-config/database/initdb.d
+
 - name: Lay down files containing secrets
   ansible.builtin.import_tasks: secrets.yml
+
+- name: Lay down initialization scripts for PostgreSQL
+  ansible.builtin.import_tasks: initdb.yml
