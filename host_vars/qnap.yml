@@ -12,3 +12,8 @@ ansible_host: "{{ lookup('bitwarden.secrets.lookup', 'cbb28608-3164-4130-9c60-b2
 ansible_user: "{{ lookup('bitwarden.secrets.lookup', '64a3d3a0-aa97-4e52-8028-b28d0119cb4b') }}"
 
 # Calling user is expected to have configured SSH keys with ssh-copy-id
+
+nas_container_folder: /share/Container
+
+# Secret named "qnap_postgres_password"
+nas_postgres_password: "{{ lookup('bitwarden.secrets.lookup', 'aa4b1bad-0a79-401a-9d50-b28d01434ba3') }}"
