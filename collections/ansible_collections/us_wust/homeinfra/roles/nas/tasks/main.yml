@@ -1,0 +1,5 @@
+---
+# Entry point for us_wust.homeinfra.nas role
+
+- name: Lay down files containing secrets
+  ansible.builtin.import_tasks: secrets.yml

@@ -1,0 +1,4 @@
+---
+# Default variables for us_wust.homeinfra.nas role
+
+nas_postgres_initialization: false

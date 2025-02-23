@@ -1,0 +1,48 @@
+---
+argument_specs:
+  main:
+    short_description: Configure QNAP NAS for backup infrastructure
+    description:
+      - >
+        Configure the QNAP NAS, or a testing environment for simulation, to
+        support the Bacula Director and Storage Daemon.
+      - >
+        Although the services themselves are primarily defined by the Docker
+        Compose file, this Ansible role is important for setting up configuration
+        files which underpin those containers.
+    version_added: '1.0.0'
+    author:
+      - 'Louis Wust <louiswust@fastmail.fm>'
+
+    options:
+      nas_container_folder:
+        type: "str"
+        required: true
+        description:
+          - Path to the Container folder on the QNAP or in the test env.
+          - >
+            This is typically a symlink under the /share volume to a subfolder
+            of e.g. /share/CACHEDEV1_DATA/Container.
+
+      nas_postgres_initialization:
+        type: "bool"
+        required: false
+        default: false
+        description:
+          - Override to true when setting up PostgreSQL for the first time.
+          - >
+            Some parameters, notably POSTGRES_PASSWORD (see
+            qnap_postgres_password) are not needed after the first time that
+            PostgreSQL is run. By setting this parameter to false (the
+            default), the relevant configs and secrets are ignored during
+            subsequent Ansible runs.
+
+      nas_postgres_password:
+        type: "str"
+        required: true
+        description:
+          - Superuser password for the PostgreSQL database.
+          - >
+            This password is not necessarily populated into a secrets file. In
+            particular, the secrets file which would normally contain this will
+            be blanked-out unless qnap_postgres_initialization is set to true.

@@ -1,0 +1,10 @@
+---
+# Variables for localhost, which is used as a test environment
+
+ansible_become: false
+ansible_connection: ansible.builtin.local
+
+nas_container_folder: /share/Container
+
+# Secret named "qnap_postgres_password_dev"
+nas_postgres_password: "{{ lookup('bitwarden.secrets.lookup', '581c8605-2802-467b-bcd2-b28d0143269e') }}"
