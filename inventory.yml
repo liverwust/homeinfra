@@ -3,3 +3,7 @@ all:
     dreamhost_servers:
       hosts:
         dreamhost_vps:
+
+    nas:
+      hosts:
+        qnap:

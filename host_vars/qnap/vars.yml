@@ -1,0 +1,14 @@
+---
+# Variables for my QNAP network-attached storage server
+
+# This path is provided by the official Python3 app from the QNAP Store
+# https://forum.qnap.com/viewforum.php?f=217
+ansible_python_interpreter: /share/CACHEDEV1_DATA/.qpkg/Python3/opt/python3/bin/python3.12
+
+# Secret named "qnap_hostname"
+ansible_host: "{{ lookup('bitwarden.secrets.lookup', 'cbb28608-3164-4130-9c60-b28d0119a674') }}"
+
+# Secret named "qnap_username"
+ansible_user: "{{ lookup('bitwarden.secrets.lookup', '64a3d3a0-aa97-4e52-8028-b28d0119cb4b') }}"
+
+# Calling user is expected to have configured SSH keys with ssh-copy-id
