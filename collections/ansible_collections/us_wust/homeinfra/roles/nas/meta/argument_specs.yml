@@ -24,6 +24,9 @@ argument_specs:
             This is typically a symlink under the /share volume to a subfolder
             of e.g. /share/CACHEDEV1_DATA/Container.
 
+      nas_postgres_bacula_password:
+        type: "str"
+        required: true
       nas_postgres_initialization:
         type: "bool"
         required: false

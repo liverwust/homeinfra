@@ -9,7 +9,7 @@ db_user=${db_user:-bacula}
 bindir=/usr/lib/postgresql/15/bin
 PATH="$PATH:$bindir"
 db_name=${db_name:-bacula}
-db_password=SRiwjL1VRmoE
+db_password=`cat /run/secrets/postgres-bacula-password`
 if [ "$db_password" != "" ]; then
    pass="password '$db_password'"
 fi
