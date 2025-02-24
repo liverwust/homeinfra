@@ -5,7 +5,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ nas_container_folder }}/user-config/database/initdb.d/{{ item | basename }}"
-    mode: "0700"
+    mode: "0755"
   loop: "{{ (role_path ~ '/files/database/initdb.d/*') | ansible.builtin.fileglob }}"
   when: 'nas_postgres_initialization'
 
