@@ -19,6 +19,8 @@ services:
   bacula-dir:
     image: liverwust/bacula-dir:bookworm-13.0.4-1
     restart: on-failure:3
+    ports:
+      - 9101:9101
     volumes:
       - letsencrypt:/mnt/letsencrypt:ro
       - /share/Container/user-config/bacula-dir/archive:/opt/bacula/archive
@@ -30,6 +32,8 @@ services:
   bacula-sd:
     image: liverwust/bacula-sd:bookworm-13.0.4-4
     restart: on-failure:3
+    ports:
+      - 9103:9103
     volumes:
       - letsencrypt:/mnt/letsencrypt:ro
       - /share/Bacula/archive:/opt/bacula/archive
