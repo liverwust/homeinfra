@@ -22,6 +22,12 @@
       - /working/bkp
   loop: "{{ nas_bacula_container_names | product(nas_bacula_container_folders) }}"
 
+- name: Create a subdirectory for the Bacula arhive location
+  ansible.builtin.file:
+    path: "{{ nas_bacula_folder }}/archive"
+    state: directory
+    mode: "0755"
+
 - name: Lay down bacula-dir.conf for the Director container
   ansible.builtin.template:
     src: bacula-dir/etc/bacula-dir.conf.j2

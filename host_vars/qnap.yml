@@ -13,6 +13,7 @@ ansible_user: "{{ lookup('bitwarden.secrets.lookup', '64a3d3a0-aa97-4e52-8028-b2
 
 # Calling user is expected to have configured SSH keys with ssh-copy-id
 
+nas_bacula_folder: /share/Bacula
 nas_container_folder: /share/Container
 
 # Secret named "qnap_postgres_password"
@@ -23,3 +24,9 @@ nas_postgres_bacula_password: "{{ lookup('bitwarden.secrets.lookup', '1314e795-3
 
 # Secret named "qnap_bacula_console"
 nas_bacula_console_password: "{{ lookup('bitwarden.secrets.lookup', '085d6022-22cc-4783-8dfd-b28f00707740') }}"
+
+# Secret named "qnap_bacula_dir_sd"
+nas_bacula_dir_sd_password: "{{ lookup('bitwarden.secrets.lookup', '146a578b-18a4-4149-8ecd-b28f0085e2fe') }}"
+
+nas_bacula_letsencrypt_fqdn: w5tower.wust.us
+nas_bacula_fqdn: bacula.wust.us

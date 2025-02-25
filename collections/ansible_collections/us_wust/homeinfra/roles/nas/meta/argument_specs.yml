@@ -15,6 +15,15 @@ argument_specs:
       - 'Louis Wust <louiswust@fastmail.fm>'
 
     options:
+      nas_bacula_folder:
+        type: "str"
+        required: true
+        description:
+          - Path to the Bacula folder on the QNAP or in the test env.
+          - >
+            This is typically a symlink under the /share volume to a subfolder
+            of e.g. /share/CACHEDEV1_DATA/Bacula.
+
       nas_container_folder:
         type: "str"
         required: true
@@ -58,3 +67,31 @@ argument_specs:
         required: true
         description:
           - Console password for using bconsole to talk to Director.
+
+      nas_bacula_letsencrypt_fqdn:
+        type: "str"
+        required: false
+        description:
+          - >
+            FQDN for the hostname running the Bacula Director and Storage
+            Daemon processes. Used to match against the TLS certificate.
+          - >
+            This is separate from nas_bacula_fqdn because it may be the
+            case that LetsEncrypt is configured to get a cert with multiple
+            FQDNs.
+
+      nas_bacula_fqdn:
+        type: "str"
+        required: true
+        description:
+          - >
+            FQDN for the hostname running the Bacula Director and Storage
+            Daemon processes.
+
+      nas_bacula_dir_sd_password:
+        type: "str"
+        required: true
+        description:
+          - >
+            Password that the Director uses to authenticate to the Storage
+            Daemon.
