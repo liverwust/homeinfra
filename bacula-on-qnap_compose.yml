@@ -16,6 +16,16 @@ services:
       - postgres-bacula-password
       - postgres-password
 
+  bacula-dir:
+    image: liverwust/bacula-dir:bookworm-13.0.4-1
+    restart: always
+    volumes:
+      - /share/Container/user-config/bacula-dir/archive:/opt/bacula/archive
+      - /share/Container/user-config/bacula-dir/bsr:/opt/bacula/bsr
+      - /share/Container/user-config/bacula-dir/etc:/opt/bacula/etc
+      - /share/Container/user-config/bacula-dir/log:/opt/bacula/log
+      - /share/Container/user-config/bacula-dir/working:/opt/bacula/working
+
 volumes:
   database-data:
 
