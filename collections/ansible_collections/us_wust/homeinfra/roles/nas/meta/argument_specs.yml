@@ -27,6 +27,9 @@ argument_specs:
       nas_postgres_bacula_password:
         type: "str"
         required: true
+        description:
+          - Bacula user role password for PostgreSQL.
+
       nas_postgres_initialization:
         type: "bool"
         required: false
@@ -49,3 +52,9 @@ argument_specs:
             This password is not necessarily populated into a secrets file. In
             particular, the secrets file which would normally contain this will
             be blanked-out unless qnap_postgres_initialization is set to true.
+
+      nas_bacula_console_password:
+        type: "str"
+        required: true
+        description:
+          - Console password for using bconsole to talk to Director.

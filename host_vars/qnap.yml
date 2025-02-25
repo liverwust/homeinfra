@@ -20,3 +20,6 @@ nas_postgres_password: "{{ lookup('bitwarden.secrets.lookup', 'aa4b1bad-0a79-401
 
 # Secret named "qnap_postgres_bacula_password"
 nas_postgres_bacula_password: "{{ lookup('bitwarden.secrets.lookup', '1314e795-3ebf-428d-9c17-b28d0150789a') }}"
+
+# Secret named "qnap_bacula_console"
+nas_bacula_console_password: "{{ lookup('bitwarden.secrets.lookup', '085d6022-22cc-4783-8dfd-b28f00707740') }}"
