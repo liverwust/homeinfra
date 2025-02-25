@@ -1,0 +1,8 @@
+---
+# Lay down configuration files for Bacula
+
+- name: Lay down bacula-dir.conf for the Director container
+  ansible.builtin.template:
+    src: bacula-dir/etc/bacula-dir.conf.j2
+    dest: "{{ nas_container_folder }}/user-config/bacula-dir/etc/bacula-dir.conf"
+    mode: "0644"

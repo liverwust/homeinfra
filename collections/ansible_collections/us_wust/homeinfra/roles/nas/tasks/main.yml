@@ -8,6 +8,15 @@
     mode: "0755"
   loop:
     - user-config
+    - user-config/bacula-dir
+    # I only know what etc and log do. The others are here just because
+    # they are blank in the base layer.
+    - user-config/bacula-dir/archive
+    - user-config/bacula-dir/bsr
+    - user-config/bacula-dir/etc
+    - user-config/bacula-dir/log
+    - user-config/bacula-dir/working
+    - user-config/bacula-dir/working/bkp
     - user-config/database
     - user-config/database/initdb.d
 
@@ -16,3 +25,6 @@
 
 - name: Lay down initialization scripts for PostgreSQL
   ansible.builtin.import_tasks: initdb.yml
+
+- name: Lay down Bacula configuration files
+  ansible.builtin.import_tasks: bacula.yml
