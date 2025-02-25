@@ -20,7 +20,7 @@ Director {
   # TLS configuration directives
   TLS Enable = yes
   TLS Require = yes
-  TLS Certificate = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/cert.pem
+  TLS Certificate = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/fullchain.pem
   TLS Key = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/privkey.pem
   TLS Verify Peer = no
 }
@@ -145,5 +145,5 @@ Storage {
   # TLS configuration directives
   TLS Enable = yes
   TLS Require = yes
-  TLS CA Certificate File = /usr/lib/ssl/cert.pem
+  TLS CA Certificate File = /usr/lib/ssl/fullchain.pem
 }
