@@ -32,5 +32,5 @@ RUN apt-get update
 # Then install the Bacula with PostgreSQL driver with:
 RUN apt-get install -y bacula
 
-CMD ["-dt", "-c", "/opt/bacula/etc/bacula-sd.conf"]
+CMD ["-fP", "-c", "/opt/bacula/etc/bacula-sd.conf"]
 ENTRYPOINT ["/opt/bacula/bin/bacula-sd"]

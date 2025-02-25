@@ -28,7 +28,7 @@ services:
       - /share/Container/user-config/bacula-dir/working:/opt/bacula/working
 
   bacula-sd:
-    image: liverwust/bacula-sd:bookworm-13.0.4-3
+    image: liverwust/bacula-sd:bookworm-13.0.4-4
     restart: on-failure:3
     volumes:
       - letsencrypt:/mnt/letsencrypt:ro
