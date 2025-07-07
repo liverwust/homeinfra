@@ -14,3 +14,6 @@
 # Include the certificates directory (for Let's Encrypt on the control node) 
 /acme-certificates/*
 !/acme-certificates/.keep
+
+# Helm chart deps
+charts/*.tgz
