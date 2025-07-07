@@ -189,4 +189,4 @@ metricsService:
 # BitwardenSecret configuration
 bwsecret:
   name: bitwarden-secret-demo
-  project_id: f40a7f25-bf96-45df-9467-b313005c6a18
+  organization_id: efbcb3f6-7b38-4fab-ad17-b1ff017552ad
