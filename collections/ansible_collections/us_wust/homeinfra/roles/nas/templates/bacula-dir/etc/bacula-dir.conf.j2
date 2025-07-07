@@ -42,6 +42,37 @@ Job {
   Write Bootstrap = "/opt/bacula/working/%c.bsr"
 }
 
+Job {
+  Name = desktop-hppenbn-backup
+  Enabled = yes
+  Type = Backup
+  Level = Incremental
+  Client = desktop-hppenbn-fd
+  FileSet = "Windows Desktop"
+  Schedule = "WeeklyCycle"
+  Storage = File1
+  Messages = Standard
+  Pool = File
+  Maximum Bandwidth = 5 m/s
+  SpoolAttributes = yes
+  Priority = 10
+  Write Bootstrap = "/opt/bacula/working/%c.bsr"
+}
+
+Job {
+  Name = "RestoreFiles"
+  Type = Restore
+  Client=bramball-fd
+  Storage = File1
+# The FileSet and Pool directives are not used by Restore Jobs
+# but must not be removed
+  FileSet="Linux Laptop"
+  Pool = File
+  Messages = Standard
+  Where = /opt/bacula/archive/bacula-restores
+}
+
+
 FileSet {
   Name = "Linux Laptop"
   Include {
@@ -50,6 +81,13 @@ FileSet {
     }
     File = /home
     File = /var/log
+  }
+}
+
+FileSet {
+  Name = "Windows Desktop"
+  Include {
+    File = "c:/Users"
   }
 }
 
@@ -67,6 +105,16 @@ Client {
   Name = bramball-fd
   Catalog = BaculaCatalog
   Password = "{{ lookup('bitwarden.secrets.lookup', 'fb814d1f-9f56-44a2-838f-b28f0096d876') }}"
+  AllowFDConnections = yes
+  File Retention = 60 days            # 60 days
+  Job Retention = 6 months            # six months
+  AutoPrune = yes                     # Prune expired Jobs/Files
+}
+
+Client {
+  Name = desktop-hppenbn-fd
+  Catalog = BaculaCatalog
+  Password = "{{ lookup('bitwarden.secrets.lookup', 'f280a138-2960-40c6-8340-b29400f72804') }}"
   AllowFDConnections = yes
   File Retention = 60 days            # 60 days
   Job Retention = 6 months            # six months
