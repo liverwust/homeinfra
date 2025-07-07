@@ -185,3 +185,8 @@ metricsService:
     protocol: TCP
     targetPort: https
   type: ClusterIP
+
+# BitwardenSecret configuration
+bwsecret:
+  name: bitwarden-secret-demo
+  project_id: f40a7f25-bf96-45df-9467-b313005c6a18
