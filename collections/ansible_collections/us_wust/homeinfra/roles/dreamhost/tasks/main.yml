@@ -12,3 +12,7 @@
   ansible.builtin.import_tasks: dns.yml
   vars:
     ansible_connection: ansible.builtin.local
+
+- name: Configure the Debian guest OS appropriately
+  ansible.builtin.import_tasks: debian.yml
+  become: true
