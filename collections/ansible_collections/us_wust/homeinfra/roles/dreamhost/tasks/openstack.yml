@@ -32,3 +32,31 @@
         direction: egress
         ether_type: IPv6
         protocol: any
+
+- name: Configure the Key Pair for the Kubernetes guest
+  openstack.cloud.keypair:
+    name: kube-keypair
+    public_key_file: "{{ dreamhost_public_key }}"
+
+- name: Configure the Volume for the Kubernetes guest
+  openstack.cloud.volume:
+    description: |-
+      (Non-Ephemeral) Volume for cluster data for Kubernetes
+    name: kube-data-volume
+    size: "{{ dreamhost_volume_size }}"
+
+- name: Create the Virtual Machine for Kubernetes
+  openstack.cloud.server:
+    description: |
+      Virtual machine hosting Kubernetes cluster
+    auto_ip: false
+    flavor: "{{ dreamhost_instance_flavor }}"
+    image: "{{ dreamhost_instance_image }}"
+    key_name: kube-keypair
+    name: "{{ inventory_hostname }}"
+    security_groups:
+      - kube-security-group
+    terminate_volume: true
+    volume_size: "{{ dreamhost_volume_size }}"
+    volumes:
+      - kube-data-volume
