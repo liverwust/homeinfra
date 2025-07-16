@@ -2,10 +2,9 @@
 
 - name: Apply DreamCompute configuration
   hosts: dreamcompute
-  become: false
-  gather_facts: true
+  gather_facts: false
   roles:
-    - us_wust.homeinfra.dreamcompute
+    - us_wust.homeinfra.dreamhost
 
 - name: Apply QNAP NAS configuration
   hosts: nas

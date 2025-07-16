@@ -6,5 +6,3 @@ all:
 
   hosts:
     dreamcompute:
-      ansible_connection: ansible.builtin.local
-      ansible_python_interpreter: '{{ lookup("ansible.builtin.pipe", "which python3") }}'
