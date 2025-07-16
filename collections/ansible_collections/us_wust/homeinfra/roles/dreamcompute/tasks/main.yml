@@ -1,0 +1,34 @@
+---
+# Configure DreamCompute resources
+
+- name: Get the IP address of the Ansible Control Node
+  ansible.builtin.set_fact:
+    ansible_control_node_external_ip: |-
+      {{ (lookup('ansible.builtin.url',
+                 'https://api.ipify.org?format=json',
+                 split_lines=False) |
+          from_json).ip }}
+
+- name: Configure the Security Group for the Kubernetes guest
+  openstack.cloud.security_group:
+    description: |
+      Security Group for the Kubernetes guest
+    name: kube-security-group
+    security_group_rules:
+      - description: Inbound SSH from the Ansible Control Node
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 22
+        port_range_max: 22
+        protocol: tcp
+        remote_ip_prefix: "{{ ansible_control_node_external_ip }}/32"
+
+      - description: Egress IPv4 (no restriction)
+        direction: egress
+        ether_type: IPv4
+        protocol: any
+
+      - description: Egress IPv4 (no restriction)
+        direction: egress
+        ether_type: IPv6
+        protocol: any

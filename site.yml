@@ -1,11 +1,11 @@
 ---
 
-- name: Apply DreamHost Server configuration
-  hosts: dreamhost_servers
+- name: Apply DreamCompute configuration
+  hosts: dreamcompute
   become: false
   gather_facts: true
   roles:
-    - us_wust.homeinfra.dreamhost
+    - us_wust.homeinfra.dreamcompute
 
 - name: Apply QNAP NAS configuration
   hosts: nas

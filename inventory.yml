@@ -1,9 +1,10 @@
 all:
   children:
-    dreamhost_servers:
-      hosts:
-        dreamhost_vps:
-
     nas:
       hosts:
         qnap:
+
+  hosts:
+    dreamcompute:
+      ansible_connection: ansible.builtin.local
+      ansible_python_interpreter: '{{ lookup("ansible.builtin.pipe", "which python3") }}'

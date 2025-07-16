@@ -9,6 +9,11 @@ Requirements
 
 * ansible-core
 
+Please set up an openstacksdk configuration file at `~/.config/openstack/yaml`
+as described here:
+
+https://docs.openstack.org/openstacksdk/latest/user/config/configuration.html
+
 Role Variables
 --------------
 
