@@ -1,6 +1,7 @@
 ---
 collections:
-  - us_wust.homeinfra
-  - bitwarden.secrets
+  - name: bitwarden.secrets
+  - name: community.crypto
+    version: '>=2.23.0'
 
 ...

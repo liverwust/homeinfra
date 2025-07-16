@@ -15,6 +15,71 @@
     path: /var/run/reboot-required
   register: dreamhost_reboot_stat
 
-- name: Reboot the computer post-upgrade
+- name: Reboot the computer post-upgrade OR if forced
   ansible.builtin.reboot:
-  when: 'dreamhost_reboot_stat.stat.exists'
+  when: |-
+    dreamhost_reboot_stat.stat.exists or
+    dreamhost_reboot | default(False)
+
+- name: Install extra packages
+  ansible.builtin.apt:
+    name:
+      - cryptsetup
+      - parted
+
+- name: Set up the data volume partition
+  community.general.parted:
+    device: "{{ dreamhost_volume_device }}"
+    label: gpt
+    name: kube-data-part
+    number: 1
+    part_end: "{{ dreamhost_volume_size }}GB"
+    resize: false
+    state: present
+
+- name: Set up the LUKS encrypted volume container
+  community.crypto.luks_device:
+    device: "{{ dreamhost_volume_device }}-part1"
+    name: dreamhost_volume_device_crypt
+    new_passphrase: "{{ dreamhost_volume_key }}"
+    passphrase_encoding: base64
+    state: present
+    type: luks2
+  no_log: true
+
+- name: Set up LUKS container to be unlocked manually after boot
+  community.general.crypttab:
+    backing_device: "{{ dreamhost_volume_device }}-part1"
+    name: dreamhost_volume_device_crypt
+    # This Ansible playbook is used to unlock it
+    opts: noauto
+    state: present
+
+- name: Open the LUKS encrypted volume container
+  community.crypto.luks_device:
+    device: "{{ dreamhost_volume_device }}-part1"
+    name: dreamhost_volume_device_crypt
+    passphrase: "{{ dreamhost_volume_key }}"
+    passphrase_encoding: base64
+    state: opened
+  no_log: true
+
+- name: Format the encrypted data volume with ext4
+  community.general.filesystem:
+    dev: /dev/mapper/dreamhost_volume_device_crypt
+    fstype: ext4
+    resizefs: false
+    state: present
+
+- name: Ensure that the mount point exists
+  ansible.builtin.file:
+    path: /data
+    state: directory
+
+- name: Set up the filesystem mount at the /data location
+  ansible.posix.mount:
+    fstype: ext4
+    opts: noauto
+    path: /data
+    src: /dev/mapper/dreamhost_volume_device_crypt
+    state: mounted
