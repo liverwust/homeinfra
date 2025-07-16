@@ -7,6 +7,8 @@ all:
     dreamcompute:
       hosts:
         microk8s.wust.us:
+          dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
+          dreamhost_dns_zone: wust.us
           dreamhost_instance_flavor: "gp1.lightspeed"
           dreamhost_instance_image: "Debian-12"
           dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'

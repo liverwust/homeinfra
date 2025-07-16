@@ -60,3 +60,22 @@
     volume_size: "{{ dreamhost_volume_size }}"
     volumes:
       - kube-data-volume
+  register: dreamhost_openstack_server
+
+- name: Set up the ipv4 and ipv6 addresses for this host
+  ansible.builtin.set_fact:
+    dreamhost_access_ipv4: |-
+      {{ dreamhost_openstack_server.server.addresses.public |
+         selectattr('version', 'equalto', 4) |
+         map(attribute='addr') |
+         first }}
+
+    dreamhost_access_ipv6: |-
+      {{ dreamhost_openstack_server.server.addresses.public |
+         selectattr('version', 'equalto', 6) |
+         map(attribute='addr') |
+         first }}
+
+- name: For convenience (with new hosts), go ahead and overwrite ansible_host
+  ansible.builtin.set_fact:
+    ansible_host: "{{ dreamhost_access_ipv4 }}"
