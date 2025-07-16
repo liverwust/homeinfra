@@ -23,6 +23,16 @@
         protocol: tcp
         remote_ip_prefix: "{{ ansible_control_node_external_ip }}/32"
 
+      - description: Inbound ICMP4 (ping and friends)
+        direction: ingress
+        ether_type: IPv4
+        protocol: icmp
+
+      - description: Inbound ICMP6 (ping and friends)
+        direction: ingress
+        ether_type: IPv6
+        protocol: icmpv6
+
       - description: Egress IPv4 (no restriction)
         direction: egress
         ether_type: IPv4
