@@ -52,7 +52,7 @@
   openstack.cloud.volume:
     description: |-
       (Non-Ephemeral) Volume for cluster data for Kubernetes
-    name: kube-data-volume
+    name: "{{ inventory_hostname }}-data-volume"
     size: "{{ dreamhost_volume_size }}"
 
 - name: Create the Virtual Machine for Kubernetes
@@ -69,7 +69,7 @@
     terminate_volume: true
     volume_size: "{{ dreamhost_volume_size }}"
     volumes:
-      - kube-data-volume
+      - "{{ inventory_hostname }}-data-volume"
   register: dreamhost_openstack_server
 
 - name: Set up the ipv4 and ipv6 addresses for this host
