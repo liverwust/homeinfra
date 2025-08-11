@@ -1,9 +1,0 @@
-# Sample service to run persistently
-# This is allowed per DreamHost policy:
-# https://help.dreamhost.com/hc/en-us/articles/214869648-Persistent-processes
-
-[Unit]
-Description=Sample persistent process
-
-[Service]
-ExecStart=sleep 60000

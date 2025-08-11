@@ -83,3 +83,9 @@
     path: /data
     src: /dev/mapper/dreamhost_volume_device_crypt
     state: mounted
+
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#prerequisite-ipv4-forwarding-optional
+- name: Enable IPv4 packet forwarding between interfaces
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1

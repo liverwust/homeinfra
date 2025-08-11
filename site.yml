@@ -1,16 +1,30 @@
 ---
 
-- name: Apply DreamCompute configuration
-  hosts: dreamcompute
+- name: Configure DreamCompute cloud resources
+  hosts: localhost
   gather_facts: false
-  #serial: 1
+  become: false
   roles:
-    - us_wust.homeinfra.dreamhost
+    - us_wust.homeinfra.dreamcompute
 
-- name: Apply QNAP NAS configuration
-  hosts: nas
+- name: Configure Kubernetes control nodes
+  hosts: dreamcompute_control
   gather_facts: true
+  become: true
   roles:
-    - us_wust.homeinfra.nas
+    - us_wust.homeinfra.k8s_nodes
 
+- name: Configure Kubernetes worker nodes
+  hosts: dreamcompute_worker
+  gather_facts: true
+  become: true
+  roles:
+    - us_wust.homeinfra.k8s_nodes
+
+#- name: Apply QNAP NAS configuration
+#  hosts: nas
+#  gather_facts: true
+#  roles:
+#    - us_wust.homeinfra.nas
+#
 ...

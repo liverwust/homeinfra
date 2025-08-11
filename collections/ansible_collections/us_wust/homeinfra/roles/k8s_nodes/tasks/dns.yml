@@ -1,6 +1,17 @@
 ---
 # Update DreamHost DNS records to match
 
+- name: Retrieve DreamHost access IPs from prior localhost play
+  ansible.builtin.set_fact:
+    dreamhost_access_ipv4: |-
+      {{ hostvars['localhost']['dreamhost_access_ipv4'][inventory_hostname] }}
+    dreamhost_access_ipv6: |-
+      {{ hostvars['localhost']['dreamhost_access_ipv6'][inventory_hostname] }}
+
+- name: For convenience (with new hosts), go ahead and overwrite ansible_host
+  ansible.builtin.set_fact:
+    ansible_host: "{{ dreamhost_access_ipv4 }}"
+
 - name: Retrieve DNS records
   ansible.builtin.uri:
     url: 'https://api.dreamhost.com/?key={{ dreamhost_dns_api_key }}&cmd=dns-list_records'

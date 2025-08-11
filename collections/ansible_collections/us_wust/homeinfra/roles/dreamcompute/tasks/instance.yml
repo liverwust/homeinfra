@@ -1,0 +1,48 @@
+---
+# Configure individual DreamCompute instances
+
+- name: Configure the Key Pair for the Kubernetes guest
+  openstack.cloud.keypair:
+    name: kube-keypair
+    public_key_file: "{{ dreamhost_public_key }}"
+
+- name: Configure the Volume for the Kubernetes guest
+  openstack.cloud.volume:
+    description: |-
+      (Non-Ephemeral) Volume for cluster data for Kubernetes
+    name: "{{ dreamhost_instance_name }}-data-volume"
+    size: "{{ hostvars[dreamhost_instance_name]['dreamhost_volume_size'] }}"
+
+- name: Create the Virtual Machine for Kubernetes
+  openstack.cloud.server:
+    description: |
+      Virtual machine hosting Kubernetes cluster
+    auto_ip: false
+    flavor: "{{ hostvars[dreamhost_instance_name]['dreamhost_instance_flavor'] }}"
+    image: "{{ hostvars[dreamhost_instance_name]['dreamhost_instance_image'] }}"
+    key_name: kube-keypair
+    name: "{{ dreamhost_instance_name }}"
+    security_groups: "{{ hostvars[dreamhost_instance_name]['dreamhost_security_groups'] }}"
+    terminate_volume: true
+    volume_size: "{{ hostvars[dreamhost_instance_name]['dreamhost_volume_size'] }}"
+    volumes:
+      - "{{ dreamhost_instance_name }}-data-volume"
+  register: dreamhost_openstack_server
+
+- name: Set up the ipv4 and ipv6 addresses for this host
+  ansible.builtin.set_fact:
+    dreamhost_access_ipv4: |-
+      {{ dreamhost_access_ipv4 | combine({
+         dreamhost_instance_name: (dreamhost_openstack_server.server.addresses.public |
+                                   selectattr('version', 'equalto', 4) |
+                                   map(attribute='addr') |
+                                   first)
+         }) }}
+
+    dreamhost_access_ipv6: |-
+      {{ dreamhost_access_ipv6 | combine({
+         dreamhost_instance_name: (dreamhost_openstack_server.server.addresses.public |
+                                   selectattr('version', 'equalto', 6) |
+                                   map(attribute='addr') |
+                                   first)
+         }) }}

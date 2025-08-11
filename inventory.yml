@@ -1,136 +1,95 @@
 all:
+  vars:
+    ansible_user: debian
+    dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
+    dreamhost_dns_zone: wust.us
+    dreamhost_instance_image: "Debian-12"
+    dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
+    dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
+
+    dreamhost_security_group_rules:
+      - description: Inbound SSH from the Ansible Control Node IPv4
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 22
+        port_range_max: 22
+        protocol: tcp
+        remote_ip_prefix: "{{ ansible_control_node_external_ipv4 }}/32"
+
+      - description: Inbound SSH from the Ansible Control Node IPv6
+        direction: ingress
+        ether_type: IPv6
+        port_range_min: 22
+        port_range_max: 22
+        protocol: tcp
+        remote_ip_prefix: "{{ ansible_control_node_external_ipv6 }}/128"
+
+      - description: Inbound ICMP4 (ping and friends)
+        direction: ingress
+        ether_type: IPv4
+        protocol: icmp
+
+      - description: Inbound ICMP6 (ping and friends)
+        direction: ingress
+        ether_type: IPv6
+        protocol: icmpv6
+
+      - description: Egress IPv4 (no restriction)
+        direction: egress
+        ether_type: IPv4
+        protocol: any
+
+      - description: Egress IPv4 (no restriction)
+        direction: egress
+        ether_type: IPv6
+        protocol: any
+
+    dreamhost_control_security_group_rules:
+      - description: >-
+          Kubernetes API service from
+          {{ dreamhost_security_group_item.name }}
+          ({{ dreamhost_security_group_item.ether_type }})
+        direction: ingress
+        ether_type: "{{ dreamhost_security_group_item.ether_type }}"
+        port_range_min: 6443
+        port_range_max: 6443
+        protocol: tcp
+        remote_ip_prefix: "{{ dreamhost_security_group_item.cidr_addr }}"
+
+    dreamhost_worker_security_group_rules:
+      - description: >-
+          Kubelet API service from
+          {{ dreamhost_security_group_item.name }}
+          ({{ dreamhost_security_group_item.ether_type }})
+        direction: ingress
+        ether_type: "{{ dreamhost_security_group_item.ether_type }}"
+        port_range_min: 10250
+        port_range_max: 10250
+        protocol: tcp
+        remote_ip_prefix: "{{ dreamhost_security_group_item.cidr_addr }}"
+
   children:
     nas:
       hosts:
         qnap:
 
     dreamcompute:
-      vars:
-        ansible_user: debian
-        dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
-        dreamhost_dns_zone: wust.us
-        dreamhost_instance_image: "Debian-12"
-        dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
-        dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
-
-        dreamhost_security_group_rules:
-          - description: Inbound SSH from the Ansible Control Node IPv4
-            direction: ingress
-            ether_type: IPv4
-            port_range_min: 22
-            port_range_max: 22
-            protocol: tcp
-            remote_ip_prefix: "{{ ansible_control_node_external_ipv4 }}/32"
-
-          - description: Inbound SSH from the Ansible Control Node IPv6
-            direction: ingress
-            ether_type: IPv6
-            port_range_min: 22
-            port_range_max: 22
-            protocol: tcp
-            remote_ip_prefix: "{{ ansible_control_node_external_ipv6 }}/128"
-
-          - description: Inbound ICMP4 (ping and friends)
-            direction: ingress
-            ether_type: IPv4
-            protocol: icmp
-
-          - description: Inbound ICMP6 (ping and friends)
-            direction: ingress
-            ether_type: IPv6
-            protocol: icmpv6
-
-          - description: Egress IPv4 (no restriction)
-            direction: egress
-            ether_type: IPv4
-            protocol: any
-
-          - description: Egress IPv4 (no restriction)
-            direction: egress
-            ether_type: IPv6
-            protocol: any
-
-        dreamhost_control_security_group_rules:
-          - description: >-
-              Kubernetes API service from
-              {{ dreamhost_security_group_item.name }}
-              ({{ dreamhost_security_group_item.ether_type }})
-            direction: ingress
-            ether_type: "{{ dreamhost_security_group_item.ether_type }}"
-            port_range_min: 6443
-            port_range_max: 6443
-            protocol: tcp
-            remote_ip_prefix: "{{ dreamhost_security_group_item.cidr_addr }}"
-
-        dreamhost_worker_security_group_rules:
-          - description: >-
-              Kubelet API service from
-              {{ dreamhost_security_group_item.name }}
-              ({{ dreamhost_security_group_item.ether_type }})
-            direction: ingress
-            ether_type: "{{ dreamhost_security_group_item.ether_type }}"
-            port_range_min: 10250
-            port_range_max: 10250
-            protocol: tcp
-            remote_ip_prefix: "{{ dreamhost_security_group_item.cidr_addr }}"
-
-      hosts:
-        control1.cluster.wust.us:
-          dreamhost_instance_flavor: "gp1.lightspeed"
-          dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-          dreamhost_volume_size: 35
-          dreamhost_volume_key: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            37616533366430306239386466326263663034363538383461303064383062633732653433666333
-            3634353133393139336365643033313739653635373531360a393337306334396136303334343537
-            39656664626463373131656562306636373237633735316165656538373631346262356164363538
-            3361613761326637390a646334316365613834393236623138643362336537643332643564353437
-            64383261363432613637356263643836623066306537326435306465666562663632396366333135
-            6332386133313937316537666562616634656466636637363934
-
-        worker1.cluster.wust.us:
-          dreamhost_instance_flavor: "gp1.warpspeed"
-          dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-          dreamhost_volume_size: 35
-          dreamhost_volume_key: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            61343639336566366531613239393536366638663664613434376238646134663336343063373432
-            6330626539633437323665383461366362653864663433310a386139383234363764383434313731
-            61613262616536613533366134353837356262633963333663366435316461373534363563333963
-            6137616638396165660a643337373939376137306366633065313233346133313334636432313139
-            38343837653432363337386334393030643365373163316161336161663435663834313561633063
-            3766633765303766663234333463343635633766356361323334
-
-        worker2.cluster.wust.us:
-          dreamhost_instance_flavor: "gp1.warpspeed"
-          dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-          dreamhost_volume_size: 35
-          dreamhost_volume_key: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            35326565656264613132306337306264373430386231313965386433373334623432363137323964
-            3037363162306131363532323332393335313439343536620a303163326533643462323637346138
-            31356264383132303337356461623437646235346438626130303134303131626262653831363466
-            6336316131646562630a636266373165366339353862666435316635393034663834613638313261
-            32356239653834383938343861633636306635663736356664653934383330313866396632343732
-            6262663439376263646239626138656534663930363033356665
-
-        worker3.cluster.wust.us:
-          dreamhost_instance_flavor: "gp1.warpspeed"
-          dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-          dreamhost_volume_size: 35
-          dreamhost_volume_key: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            38613261613661633731303533363861303230306237353135613636623233343036633839386564
-            3564376339636635363066303332323239376166353366390a306337616534336131643332303162
-            38616563353563643565633636643539326164633639303530313163666366663361333234306665
-            6666616533383737330a313163343962616638396636393136316233363133366530336263626237
-            34313437366639636538656431636230306333323639313339333132383330663161313033373431
-            3062326632366233333033373039343031653834643334313266
-
       children:
         dreamcompute_control:
           hosts:
             control1.cluster.wust.us:
+              dreamhost_instance_flavor: "gp1.lightspeed"
+              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
+              dreamhost_volume_size: 35
+              dreamhost_volume_key: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                37616533366430306239386466326263663034363538383461303064383062633732653433666333
+                3634353133393139336365643033313739653635373531360a393337306334396136303334343537
+                39656664626463373131656562306636373237633735316165656538373631346262356164363538
+                3361613761326637390a646334316365613834393236623138643362336537643332643564353437
+                64383261363432613637356263643836623066306537326435306465666562663632396366333135
+                6332386133313937316537666562616634656466636637363934
+
           vars:
             dreamhost_security_groups:
               - kube-security-group
@@ -139,8 +98,44 @@ all:
         dreamcompute_worker:
           hosts:
             worker1.cluster.wust.us:
+              dreamhost_instance_flavor: "gp1.warpspeed"
+              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
+              dreamhost_volume_size: 35
+              dreamhost_volume_key: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                61343639336566366531613239393536366638663664613434376238646134663336343063373432
+                6330626539633437323665383461366362653864663433310a386139383234363764383434313731
+                61613262616536613533366134353837356262633963333663366435316461373534363563333963
+                6137616638396165660a643337373939376137306366633065313233346133313334636432313139
+                38343837653432363337386334393030643365373163316161336161663435663834313561633063
+                3766633765303766663234333463343635633766356361323334
+
             worker2.cluster.wust.us:
+              dreamhost_instance_flavor: "gp1.warpspeed"
+              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
+              dreamhost_volume_size: 35
+              dreamhost_volume_key: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                35326565656264613132306337306264373430386231313965386433373334623432363137323964
+                3037363162306131363532323332393335313439343536620a303163326533643462323637346138
+                31356264383132303337356461623437646235346438626130303134303131626262653831363466
+                6336316131646562630a636266373165366339353862666435316635393034663834613638313261
+                32356239653834383938343861633636306635663736356664653934383330313866396632343732
+                6262663439376263646239626138656534663930363033356665
+
             worker3.cluster.wust.us:
+              dreamhost_instance_flavor: "gp1.warpspeed"
+              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
+              dreamhost_volume_size: 35
+              dreamhost_volume_key: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                38613261613661633731303533363861303230306237353135613636623233343036633839386564
+                3564376339636635363066303332323239376166353366390a306337616534336131643332303162
+                38616563353563643565633636643539326164633639303530313163666366663361333234306665
+                6666616533383737330a313163343962616638396636393136316233363133366530336263626237
+                34313437366639636538656431636230306333323639313339333132383330663161313033373431
+                3062326632366233333033373039343031653834643334313266
+
           vars:
             dreamhost_security_groups:
               - kube-security-group

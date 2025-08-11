@@ -1,17 +1,11 @@
 ---
 # Configure DreamCompute resources
 
-- name: Set up OpenStack infrastructure
-  ansible.builtin.import_tasks: openstack.yml
-  vars:
-    ansible_connection: ansible.builtin.local
-    # The venv python interpreter has openstacksdk
-    ansible_python_interpreter: '{{ lookup("ansible.builtin.pipe", "which python3") }}'
-
 - name: Report OpenStack IP address(es) to DreamHost DNS
   ansible.builtin.import_tasks: dns.yml
   vars:
     ansible_connection: ansible.builtin.local
+  become: false
 
 - name: Configure the Debian guest OS appropriately
   ansible.builtin.import_tasks: debian.yml

@@ -1,5 +1,5 @@
 ---
-# Configure DreamCompute resources
+# Configure shared DreamCompute resources
 
 - name: Get the IPv4 address of the Ansible Control Node
   ansible.builtin.set_fact:
@@ -95,56 +95,14 @@
   openstack.cloud.security_group:
     description: Security Group for the Kubernetes control nodes
     name: kube-control-security-group
-    security_group_rules: "{{ dreamhost_security_group_control }}"
+    security_group_rules: |-
+      {{ dreamhost_security_group_control |
+         sort(attribute='description') }}
 
 - name: Configure the additional Security Group for Kubernetes worker nodes
   openstack.cloud.security_group:
     description: Security Group for the Kubernetes worker nodes
     name: kube-worker-security-group
-    security_group_rules: "{{ dreamhost_security_group_worker }}"
-
-- name: Configure the Key Pair for the Kubernetes guest
-  openstack.cloud.keypair:
-    name: kube-keypair
-    public_key_file: "{{ dreamhost_public_key }}"
-
-- name: Configure the Volume for the Kubernetes guest
-  openstack.cloud.volume:
-    description: |-
-      (Non-Ephemeral) Volume for cluster data for Kubernetes
-    name: "{{ inventory_hostname }}-data-volume"
-    size: "{{ dreamhost_volume_size }}"
-
-- name: Create the Virtual Machine for Kubernetes
-  openstack.cloud.server:
-    description: |
-      Virtual machine hosting Kubernetes cluster
-    auto_ip: false
-    flavor: "{{ dreamhost_instance_flavor }}"
-    image: "{{ dreamhost_instance_image }}"
-    key_name: kube-keypair
-    name: "{{ inventory_hostname }}"
-    security_groups: "{{ dreamhost_security_groups }}"
-    terminate_volume: true
-    volume_size: "{{ dreamhost_volume_size }}"
-    volumes:
-      - "{{ inventory_hostname }}-data-volume"
-  register: dreamhost_openstack_server
-
-- name: Set up the ipv4 and ipv6 addresses for this host
-  ansible.builtin.set_fact:
-    dreamhost_access_ipv4: |-
-      {{ dreamhost_openstack_server.server.addresses.public |
-         selectattr('version', 'equalto', 4) |
-         map(attribute='addr') |
-         first }}
-
-    dreamhost_access_ipv6: |-
-      {{ dreamhost_openstack_server.server.addresses.public |
-         selectattr('version', 'equalto', 6) |
-         map(attribute='addr') |
-         first }}
-
-- name: For convenience (with new hosts), go ahead and overwrite ansible_host
-  ansible.builtin.set_fact:
-    ansible_host: "{{ dreamhost_access_ipv4 }}"
+    security_group_rules: |-
+      {{ dreamhost_security_group_worker |
+         sort(attribute='description') }}
