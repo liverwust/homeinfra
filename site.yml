@@ -3,6 +3,7 @@
 - name: Apply DreamCompute configuration
   hosts: dreamcompute
   gather_facts: false
+  #serial: 1
   roles:
     - us_wust.homeinfra.dreamhost
 
