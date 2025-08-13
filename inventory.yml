@@ -6,6 +6,8 @@ all:
     dreamhost_instance_image: "Debian-12"
     dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
     dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
+    dreamhost_version_crio: v1.33
+    dreamhost_version_kubernetes: v1.33
 
     dreamhost_security_group_rules:
       - description: Inbound SSH from the Ansible Control Node IPv4

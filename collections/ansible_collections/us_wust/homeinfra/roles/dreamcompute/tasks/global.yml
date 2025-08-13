@@ -24,11 +24,11 @@
         - source_type: ansible_control_node
           name: Ansible Control Node
           ether_type: IPv4
-          cidr_addr: "{{ ansible_control_node_external_ipv4 }}"
+          cidr_addr: "{{ ansible_control_node_external_ipv4 }}/32"
         - source_type: ansible_control_node
           name: Ansible Control Node
           ether_type: IPv6
-          cidr_addr: "{{ ansible_control_node_external_ipv6 }}"
+          cidr_addr: "{{ ansible_control_node_external_ipv6 }}/128"
 
 - name: Resolve control-plane DNS names to IPv4 and IPv6 while creating security group ACLs
   ansible.builtin.set_fact:
@@ -41,7 +41,7 @@
         cidr_addr: |-
           {{ lookup('community.general.dig',
                     dreamhost_security_group_item,
-                    qtype='A') }}
+                    qtype='A') ~ "/32" }}
       - source_type: |-
           {{ (dreamhost_security_group_item in groups['dreamcompute_control']) |
              ternary('control', 'worker') }}
@@ -50,7 +50,7 @@
         cidr_addr: |-
           {{ lookup('community.general.dig',
                     dreamhost_security_group_item,
-                    qtype='AAAA') }}
+                    qtype='AAAA') ~ "/128" }}
   loop_control:
     loop_var: dreamhost_security_group_item
   loop: "{{ groups['dreamcompute_control'] + groups['dreamcompute_worker'] }}"

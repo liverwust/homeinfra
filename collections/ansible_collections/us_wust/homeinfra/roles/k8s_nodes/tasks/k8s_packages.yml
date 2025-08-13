@@ -1,0 +1,45 @@
+---
+# Set up Kubernetes-related APT repositories and install packages from them
+# https://github.com/cri-o/packaging/blob/main/README.md
+
+- name: Add the Kubernetes repository key
+  ansible.builtin.apt_key:
+    keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    url: |
+      {{ 'https://pkgs.k8s.io/core:/stable:/' ~
+         dreamhost_version_kubernetes ~
+         '/deb/Release.key' }}
+
+- name: Add the Kubernetes repository
+  ansible.builtin.apt_repository:
+    filename: kubernetes
+    repo: |
+      {{ 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] ' ~
+         'https://pkgs.k8s.io/core:/stable:/' ~
+         dreamhost_version_kubernetes ~
+         '/deb/ /' }}
+
+- name: Add the CRI-O repository key
+  ansible.builtin.apt_key:
+    keyring: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+    url: |
+      {{ 'https://download.opensuse.org/repositories/isv:/cri-o:/stable:/' ~
+         dreamhost_version_crio ~
+         '/deb/Release.key' }}
+
+- name: Add the CRI-O repository
+  ansible.builtin.apt_repository:
+    filename: kubernetes
+    repo: |
+      {{ 'deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] '
+         'https://download.opensuse.org/repositories/isv:/cri-o:/stable:/' ~
+         dreamhost_version_crio ~
+         '/deb/ /' }}
+
+- name: Install the packages for Kubernetes and CRI-O
+  ansible.builtin.apt:
+    name:
+      - cri-o
+      - kubelet
+      - kubeadm
+      - kubectl

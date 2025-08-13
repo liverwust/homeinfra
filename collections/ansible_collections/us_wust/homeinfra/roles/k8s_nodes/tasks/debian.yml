@@ -24,8 +24,10 @@
 - name: Install extra packages
   ansible.builtin.apt:
     name:
+      - curl
       - cryptsetup
       - parted
+      - software-properties-common
 
 - name: Set up the data volume partition
   community.general.parted:
@@ -89,3 +91,10 @@
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: 1
+
+# https://github.com/cri-o/packaging/blob/main/README.md
+- name: Enable the br_netfilter kernel module
+  community.general.modprobe:
+    name: br_netfilter
+    persistent: present
+    state: present
