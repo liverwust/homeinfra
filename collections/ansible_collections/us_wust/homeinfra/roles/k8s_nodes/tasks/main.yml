@@ -14,3 +14,7 @@
 - name: Configure the Kubernetes and CRI-O packages
   ansible.builtin.import_tasks: k8s_packages.yml
   become: true
+
+- name: Configure the Kubernetes and CRI-O services
+  ansible.builtin.import_tasks: k8s_config.yml
+  become: true

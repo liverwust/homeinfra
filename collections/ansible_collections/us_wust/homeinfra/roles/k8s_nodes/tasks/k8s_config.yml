@@ -1,0 +1,8 @@
+---
+# Set up the Kubernetes and CRI-O services
+
+- name: Enable the CRI-O service
+  ansible.builtin.service:
+    name: crio.service
+    enabled: true
+    state: started
