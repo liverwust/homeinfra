@@ -11,6 +11,7 @@
   hosts: dreamcompute_control
   gather_facts: true
   become: true
+  serial: 1
   roles:
     - us_wust.homeinfra.k8s_nodes
 
@@ -18,6 +19,7 @@
   hosts: dreamcompute_worker
   gather_facts: true
   become: true
+  serial: 1
   roles:
     - us_wust.homeinfra.k8s_nodes
 

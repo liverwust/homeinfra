@@ -6,3 +6,16 @@
     name: crio.service
     enabled: true
     state: started
+
+- name: Check if kubeadm has already run
+  stat:
+    path: "/etc/kubernetes/pki/ca.key"
+  register: k8s_nodes_initialized
+  when: "k8s_nodes_is_control"
+
+- name: Initialize with kubeadm if it wasn't already run
+  ansible.builtin.include_tasks: k8s_init.yml
+  when:
+    - "k8s_nodes_is_control"
+    - "k8s_nodes_initialized is defined"
+    - "not k8s_nodes_initialized.stat.exists"

@@ -1,6 +1,7 @@
 all:
   vars:
     ansible_user: debian
+    dreamhost_control_plane_endpoint: control.cluster.wust.us
     dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
     dreamhost_dns_zone: wust.us
     dreamhost_instance_image: "Debian-12"
@@ -96,6 +97,7 @@ all:
             dreamhost_security_groups:
               - kube-security-group
               - kube-control-security-group
+            k8s_nodes_is_control: true
 
         dreamcompute_worker:
           hosts:
@@ -142,3 +144,4 @@ all:
             dreamhost_security_groups:
               - kube-security-group
               - kube-worker-security-group
+            k8s_nodes_is_control: false
