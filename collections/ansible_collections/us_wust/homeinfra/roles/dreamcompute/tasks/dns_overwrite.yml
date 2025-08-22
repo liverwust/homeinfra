@@ -40,7 +40,6 @@
 
 - name: Add new ipv4 DNS record if it was missing or incorrect
   ansible.builtin.uri:
-    method: POST
     url: 'https://api.dreamhost.com/?key={{ dreamhost_dns_api_key }}&cmd=dns-add_record&record={{ k8s_nodes_dns_overwrite_name }}&type=A&value={{ dreamhost_access_ipv4[k8s_nodes_dns_overwrite_name] }}'
   when:
     - 'dreamhost_dns_ipv4_record != dreamhost_access_ipv4[k8s_nodes_dns_overwrite_name]'
