@@ -4,8 +4,10 @@ all:
     dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
     dreamhost_dns_zone: wust.us
     dreamhost_floating_ip_control_name: control.cluster.wust.us
-    dreamhost_floating_ip_worker_name: control.cluster.wust.us
     dreamhost_instance_image: "Debian-12"
+    dreamhost_network_private_range: >-
+      {{ lookup('bitwarden.secrets.lookup'
+                '7c19bcfc-f2f6-4b69-95fd-b34100593a6f') }}
     dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
     dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
     dreamhost_version_crio: v1.33
@@ -30,6 +32,38 @@ all:
         protocol: tcp
         remote_ip_prefix: "{{ ansible_control_node_external_ipv6 }}/128"
 
+      - description: Kubernetes API service from the Ansible Control Node IPv4
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 6443
+        port_range_max: 6443
+        protocol: tcp
+        remote_ip_prefix: "{{ ansible_control_node_external_ipv4 }}/32"
+
+      - description: Kubernetes API service from the Ansible Control Node IPv6
+        direction: ingress
+        ether_type: IPv6
+        port_range_min: 6443
+        port_range_max: 6443
+        protocol: tcp
+        remote_ip_prefix: "{{ ansible_control_node_external_ipv6 }}/128"
+
+      - description: Kubernetes API service from the private network
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 6443
+        port_range_max: 6443
+        protocol: tcp
+        remote_ip_prefix: "{{ dreamhost_network_private_range }}"
+
+      - description: "Kubelet API service from the private network"
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 10250
+        port_range_max: 10250
+        protocol: tcp
+        remote_ip_prefix: "{{ dreamhost_network_private_range }}"
+
       - description: Inbound ICMP4 (ping and friends)
         direction: ingress
         ether_type: IPv4
@@ -49,30 +83,6 @@ all:
         direction: egress
         ether_type: IPv6
         protocol: any
-
-    dreamhost_control_security_group_rules:
-      - description: >-
-          Kubernetes API service from
-          {{ dreamhost_security_group_item.name }}
-          ({{ dreamhost_security_group_item.ether_type }})
-        direction: ingress
-        ether_type: "{{ dreamhost_security_group_item.ether_type }}"
-        port_range_min: 6443
-        port_range_max: 6443
-        protocol: tcp
-        remote_ip_prefix: "{{ dreamhost_security_group_item.cidr_addr }}"
-
-    dreamhost_worker_security_group_rules:
-      - description: >-
-          Kubelet API service from
-          {{ dreamhost_security_group_item.name }}
-          ({{ dreamhost_security_group_item.ether_type }})
-        direction: ingress
-        ether_type: "{{ dreamhost_security_group_item.ether_type }}"
-        port_range_min: 10250
-        port_range_max: 10250
-        protocol: tcp
-        remote_ip_prefix: "{{ dreamhost_security_group_item.cidr_addr }}"
 
   children:
     nas:
@@ -100,9 +110,6 @@ all:
 
           vars:
             dreamhost_instance_flavor: "gp1.lightspeed"
-            dreamhost_security_groups:
-              - kube-security-group
-              - kube-control-security-group
             dreamhost_volume_size: 20
             k8s_nodes_is_control: true
 
@@ -125,8 +132,5 @@ all:
 
           vars:
             dreamhost_instance_flavor: "gp1.lightspeed"
-            dreamhost_security_groups:
-              - kube-security-group
-              - kube-worker-security-group
             dreamhost_volume_size: 20
             k8s_nodes_is_control: false

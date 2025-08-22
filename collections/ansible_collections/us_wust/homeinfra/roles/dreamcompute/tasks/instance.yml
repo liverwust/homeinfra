@@ -22,7 +22,7 @@
     image: "{{ hostvars[dreamhost_instance_name]['dreamhost_instance_image'] }}"
     key_name: kube-keypair
     name: "{{ dreamhost_instance_name }}"
-    security_groups: "{{ hostvars[dreamhost_instance_name]['dreamhost_security_groups'] }}"
+    security_groups: "kube-security-group"
     terminate_volume: true
     volume_size: "{{ hostvars[dreamhost_instance_name]['dreamhost_volume_size'] }}"
     volumes:
