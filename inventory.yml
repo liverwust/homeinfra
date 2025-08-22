@@ -1,14 +1,17 @@
 all:
   vars:
     ansible_user: debian
-    dreamhost_control_plane_endpoint: control.cluster.wust.us
     dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
     dreamhost_dns_zone: wust.us
+    dreamhost_floating_ip_control_name: control.cluster.wust.us
+    dreamhost_floating_ip_worker_name: control.cluster.wust.us
     dreamhost_instance_image: "Debian-12"
     dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
     dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
     dreamhost_version_crio: v1.33
     dreamhost_version_kubernetes: v1.33
+    # This is an emergent property of the dreamhost_instance_image
+    dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
 
     dreamhost_security_group_rules:
       - description: Inbound SSH from the Ansible Control Node IPv4
@@ -81,67 +84,49 @@ all:
         dreamcompute_control:
           hosts:
             control1.cluster.wust.us:
-              dreamhost_instance_flavor: "gp1.lightspeed"
-              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-              dreamhost_volume_size: 35
-              dreamhost_volume_key: !vault |
-                $ANSIBLE_VAULT;1.1;AES256
-                37616533366430306239386466326263663034363538383461303064383062633732653433666333
-                3634353133393139336365643033313739653635373531360a393337306334396136303334343537
-                39656664626463373131656562306636373237633735316165656538373631346262356164363538
-                3361613761326637390a646334316365613834393236623138643362336537643332643564353437
-                64383261363432613637356263643836623066306537326435306465666562663632396366333135
-                6332386133313937316537666562616634656466636637363934
+              dreamhost_volume_key: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          '2c41c46d-ff42-41b9-9601-b341004810c7') }}
+
+            control2.cluster.wust.us:
+              dreamhost_volume_key: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          'cdec8106-a73c-418c-b15c-b34100497ee7') }}
+
+            control3.cluster.wust.us:
+              dreamhost_volume_key: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          'e9beaf4f-8742-4625-94d1-b3410049c833') }}
 
           vars:
+            dreamhost_instance_flavor: "gp1.lightspeed"
             dreamhost_security_groups:
               - kube-security-group
               - kube-control-security-group
+            dreamhost_volume_size: 20
             k8s_nodes_is_control: true
 
         dreamcompute_worker:
           hosts:
             worker1.cluster.wust.us:
-              dreamhost_instance_flavor: "gp1.warpspeed"
-              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-              dreamhost_volume_size: 35
-              dreamhost_volume_key: !vault |
-                $ANSIBLE_VAULT;1.1;AES256
-                61343639336566366531613239393536366638663664613434376238646134663336343063373432
-                6330626539633437323665383461366362653864663433310a386139383234363764383434313731
-                61613262616536613533366134353837356262633963333663366435316461373534363563333963
-                6137616638396165660a643337373939376137306366633065313233346133313334636432313139
-                38343837653432363337386334393030643365373163316161336161663435663834313561633063
-                3766633765303766663234333463343635633766356361323334
+              dreamhost_volume_key: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          '51ce3131-a26c-4087-91aa-b341004a1d4f') }}
 
             worker2.cluster.wust.us:
-              dreamhost_instance_flavor: "gp1.warpspeed"
-              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-              dreamhost_volume_size: 35
-              dreamhost_volume_key: !vault |
-                $ANSIBLE_VAULT;1.1;AES256
-                35326565656264613132306337306264373430386231313965386433373334623432363137323964
-                3037363162306131363532323332393335313439343536620a303163326533643462323637346138
-                31356264383132303337356461623437646235346438626130303134303131626262653831363466
-                6336316131646562630a636266373165366339353862666435316635393034663834613638313261
-                32356239653834383938343861633636306635663736356664653934383330313866396632343732
-                6262663439376263646239626138656534663930363033356665
+              dreamhost_volume_key: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          '4c2cce2b-5d4c-4b52-8673-b341004a47af') }}
 
             worker3.cluster.wust.us:
-              dreamhost_instance_flavor: "gp1.warpspeed"
-              dreamhost_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
-              dreamhost_volume_size: 35
-              dreamhost_volume_key: !vault |
-                $ANSIBLE_VAULT;1.1;AES256
-                38613261613661633731303533363861303230306237353135613636623233343036633839386564
-                3564376339636635363066303332323239376166353366390a306337616534336131643332303162
-                38616563353563643565633636643539326164633639303530313163666366663361333234306665
-                6666616533383737330a313163343962616638396636393136316233363133366530336263626237
-                34313437366639636538656431636230306333323639313339333132383330663161313033373431
-                3062326632366233333033373039343031653834643334313266
+              dreamhost_volume_key: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          'd326d48d-0586-4ba5-9f86-b341004a5c68') }}
 
           vars:
+            dreamhost_instance_flavor: "gp1.lightspeed"
             dreamhost_security_groups:
               - kube-security-group
               - kube-worker-security-group
+            dreamhost_volume_size: 20
             k8s_nodes_is_control: false
