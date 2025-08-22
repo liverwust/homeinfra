@@ -1,12 +1,12 @@
 all:
   vars:
     ansible_user: debian
+    dreamhost_control_plane_endpoint: control.cluster.wust.us
     dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
     dreamhost_dns_zone: wust.us
-    dreamhost_floating_ip_control_name: control.cluster.wust.us
     dreamhost_instance_image: "Debian-12"
     dreamhost_network_private_range: >-
-      {{ lookup('bitwarden.secrets.lookup'
+      {{ lookup('bitwarden.secrets.lookup',
                 '7c19bcfc-f2f6-4b69-95fd-b34100593a6f') }}
     dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
     dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
@@ -47,6 +47,14 @@ all:
         port_range_max: 6443
         protocol: tcp
         remote_ip_prefix: "{{ ansible_control_node_external_ipv6 }}/128"
+
+      - description: Inter-node SSH from the private network
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 22
+        port_range_max: 22
+        protocol: tcp
+        remote_ip_prefix: "{{ dreamhost_network_private_range }}"
 
       - description: Kubernetes API service from the private network
         direction: ingress

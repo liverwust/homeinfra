@@ -1,14 +1,17 @@
 ---
 # Configure DreamCompute resources
 
-- name: Set up global DreamCompute infrastructure
-  ansible.builtin.import_tasks: global.yml
-  vars:
-    # The venv python interpreter has openstacksdk
-    ansible_python_interpreter: '{{ lookup("ansible.builtin.pipe", "which python3") }}'
+- name: Set up DreamCompute networking infrastructure
+  ansible.builtin.import_tasks: network.yml
 
 - name: Set up individual DreamCompute instances
   ansible.builtin.include_tasks: instance.yml
   loop_control:
     loop_var: dreamhost_instance_name
   loop: "{{ groups['dreamcompute'] }}"
+
+- name: Set up DreamCompute floating IPs
+  ansible.builtin.import_tasks: floating_ip.yml
+
+- name: Submit DreamCompute IP address to DreamHost DNS service
+  ansible.builtin.import_tasks: dns.yml

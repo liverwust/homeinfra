@@ -22,6 +22,7 @@
     image: "{{ hostvars[dreamhost_instance_name]['dreamhost_instance_image'] }}"
     key_name: kube-keypair
     name: "{{ dreamhost_instance_name }}"
+    network: "kube-private-network"
     security_groups: "kube-security-group"
     terminate_volume: true
     volume_size: "{{ hostvars[dreamhost_instance_name]['dreamhost_volume_size'] }}"
@@ -29,20 +30,12 @@
       - "{{ dreamhost_instance_name }}-data-volume"
   register: dreamhost_openstack_server
 
-- name: Set up the ipv4 and ipv6 addresses for this host
+- name: Report the ipv4 address for this host, for later use
   ansible.builtin.set_fact:
     dreamhost_access_ipv4: |-
       {{ dreamhost_access_ipv4 | combine({
-         dreamhost_instance_name: (dreamhost_openstack_server.server.addresses.public |
+         dreamhost_instance_name: (dreamhost_openstack_server.server.addresses['kube-private-network'] |
                                    selectattr('version', 'equalto', 4) |
-                                   map(attribute='addr') |
-                                   first)
-         }) }}
-
-    dreamhost_access_ipv6: |-
-      {{ dreamhost_access_ipv6 | combine({
-         dreamhost_instance_name: (dreamhost_openstack_server.server.addresses.public |
-                                   selectattr('version', 'equalto', 6) |
                                    map(attribute='addr') |
                                    first)
          }) }}

@@ -1,0 +1,40 @@
+---
+# Floating IP configurations are global, like network.yml, but must be applied
+# after creating instances (not before)
+
+- name: Enumerate existing floating IPs
+  openstack.cloud.floating_ip_info:
+  register: dreamcompute_floating_ips_results
+
+- name: Identify the control-plane node to which a floating IP is attached
+  ansible.builtin.set_fact:
+    dreamcompute_floating_ip_control_node: "{{ dreamcompute_item[1] }}"
+  when: |
+    {{ dreamhost_access_ipv4[dreamcompute_item[1]] ==
+       dreamcompute_item[0] }}
+  loop: |
+    {{ dreamcompute_floating_ips_results.floating_ips |
+       map(attribute='fixed_ip_address') |
+       product(groups['dreamcompute_control']) }}
+  loop_control:
+    loop_var: dreamcompute_item
+
+- name: Attach floating IP to the identified control-plane node
+  openstack.cloud.floating_ip:
+    network: public
+    reuse: true
+    # If no control-plane node was identified, just pick the first one and
+    # attach it there arbitrarily
+    server: |-
+      {{ dreamcompute_floating_ip_control_node |
+         default(groups["dreamcompute_control"] |
+                 first) }}
+  register: dreamcompute_floating_ip_result
+
+- name: Report the ipv4 address for the control plane endpoint, for later use
+  ansible.builtin.set_fact:
+    dreamhost_access_ipv4: |-
+      {{ dreamhost_access_ipv4 | combine({
+         dreamhost_control_plane_endpoint:
+         dreamcompute_floating_ip_result.floating_ip.floating_ip_address
+         }) }}

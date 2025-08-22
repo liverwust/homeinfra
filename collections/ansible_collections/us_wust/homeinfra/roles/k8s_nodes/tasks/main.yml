@@ -1,12 +1,6 @@
 ---
 # Configure DreamCompute resources
 
-- name: Report OpenStack IP address(es) to DreamHost DNS
-  ansible.builtin.import_tasks: dns.yml
-  vars:
-    ansible_connection: ansible.builtin.local
-  become: false
-
 - name: Configure the Debian guest OS appropriately
   ansible.builtin.import_tasks: debian.yml
   become: true

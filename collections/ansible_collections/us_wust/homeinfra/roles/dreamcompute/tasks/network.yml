@@ -22,3 +22,28 @@
     description: Security Group for all Kubernetes nodes
     name: "kube-security-group"
     security_group_rules: "{{ dreamhost_security_group_rules }}"
+
+- name: Add the private network for hosting nodes
+  openstack.cloud.network:
+    admin_state_up: true
+    external: false
+    name: kube-private-network
+
+- name: Add the private subnet for hosting nodes
+  openstack.cloud.subnet:
+    cidr: "{{ dreamhost_network_private_range }}"
+    description: "Private Kubernetes subnet"
+    dns_nameservers:
+      - "8.8.8.8"
+      - "8.8.4.4"
+    is_dhcp_enabled: false
+    name: kube-private-subnet
+    network: kube-private-network
+
+- name: Add the private-public router for the Kubernetes network
+  openstack.cloud.router:
+    external_gateway_info:
+      network: public
+    interfaces:
+      - kube-private-subnet
+    name: kube-private-public-router

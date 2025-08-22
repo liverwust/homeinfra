@@ -1,0 +1,16 @@
+---
+# Update DreamHost DNS records to match
+
+- name: Retrieve DNS records
+  ansible.builtin.uri:
+    url: 'https://api.dreamhost.com/?key={{ dreamhost_dns_api_key }}&cmd=dns-list_records'
+    return_content: true
+  register: dreamhost_dns_record_listing
+  # This is a read-only API endpoint
+  check_mode: false
+  changed_when: false
+
+- name: Delete and recreate (if necessary) the control-plane DNS name
+  ansible.builtin.include_tasks: dns_overwrite.yml
+  vars:
+    k8s_nodes_dns_overwrite_name: "{{ dreamhost_control_plane_endpoint }}"
