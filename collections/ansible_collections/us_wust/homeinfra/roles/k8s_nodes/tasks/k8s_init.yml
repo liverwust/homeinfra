@@ -1,6 +1,6 @@
 ---
 # Run kubeadm for the first time
 
-- name: Initialize the control-plane node
-  ansible.builtin.command: >
-    kubeadm init --control-plane-endpoint "{{ dreamhost_control_plane_endpoint }}"
+#- name: Initialize the control-plane node
+#  ansible.builtin.command: >
+#    kubeadm init --control-plane-endpoint "{{ dreamhost_control_plane_endpoint }}"
