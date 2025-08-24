@@ -29,16 +29,6 @@
       - parted
       - software-properties-common
 
-- name: Install control-plane cluster packages
-  ansible.builtin.apt:
-    name:
-      - pacemaker
-      - pacemaker-cli-utils
-      - pcs
-    # Don't install the full suite of fence-agents
-    install_recommends: false
-  when: k8s_nodes_is_control
-
 - name: Set up the data volume partition
   community.general.parted:
     device: "{{ dreamhost_volume_device }}"
