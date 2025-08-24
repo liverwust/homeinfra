@@ -1,0 +1,36 @@
+---
+# Distribute SSH keys shared between control-plane nodes
+
+- name: Copy private SSH host keys shared between control-plane nodes
+  ansible.builtin.copy:
+    content: "{{ k8s_nodes_ssh_key_item.private_key }}"
+    dest: "/etc/ssh/ssh_host_{{ k8s_nodes_ssh_key_item.algorithm }}_key"
+    mode: "0600"
+  loop: "{{ k8s_nodes_ssh_keys | default([]) }}"
+  loop_control:
+    loop_var: k8s_nodes_ssh_key_item
+    label: "{{ k8s_nodes_ssh_key_item.algorithm }}"
+  register: k8s_nodes_private_keys_copied
+
+- name: Copy public SSH host keys shared between control-plane nodes
+  ansible.builtin.copy:
+    content: "{{ k8s_nodes_ssh_key_item.public_key }}"
+    dest: "/etc/ssh/ssh_host_{{ k8s_nodes_ssh_key_item.algorithm }}_key.pub"
+    mode: "0644"
+  loop: "{{ k8s_nodes_ssh_keys | default([]) }}"
+  loop_control:
+    loop_var: k8s_nodes_ssh_key_item
+    label: "{{ k8s_nodes_ssh_key_item.algorithm }}"
+  register: k8s_nodes_public_keys_copied
+
+- name: Restart SSH service if any of the private or public keys were replaced
+  ansible.builtin.service:
+    name: sshd.service
+    state: restarted
+  when: >
+    ((k8s_nodes_private_keys_copied.results |
+      map(attribute='changed'))
+     is any) or
+    ((k8s_nodes_public_keys_copied.results |
+      map(attribute='changed'))
+     is any)
