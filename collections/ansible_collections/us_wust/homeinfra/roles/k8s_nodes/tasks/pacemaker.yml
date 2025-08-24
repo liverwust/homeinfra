@@ -1,0 +1,10 @@
+---
+# Install and set up Pacemaker / Corosync for Floating IP support
+
+- name: Install control-plane cluster packages
+  ansible.builtin.apt:
+    name:
+      - pacemaker
+      - pacemaker-cli-utils
+      - pcs
+  when: k8s_nodes_is_control

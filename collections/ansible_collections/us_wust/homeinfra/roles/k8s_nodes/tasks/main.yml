@@ -7,6 +7,9 @@
 - name: Configure the Debian guest OS appropriately
   ansible.builtin.import_tasks: debian.yml
 
+- name: Install and set up Pacemaker / Corosync for Floating IP support
+  ansible.builtin.import_tasks: pacemaker.yml
+
 - name: Configure the Kubernetes and CRI-O packages
   ansible.builtin.import_tasks: k8s_packages.yml
 
