@@ -1,6 +1,18 @@
 all:
   vars:
     ansible_user: debian
+    dreamhost_control_openstack_auth_url: >-
+      {{ lookup('bitwarden.secrets.lookup',
+                '1c452ae9-7795-4bed-9049-b34500629d9c') }}
+    dreamhost_control_openstack_password: >-
+      {{ lookup('bitwarden.secrets.lookup',
+                '56dfd850-5420-4901-bfc0-b34500624030') }}
+    dreamhost_control_openstack_project_name: >-
+      {{ lookup('bitwarden.secrets.lookup',
+                'ef1237b6-f31d-494e-bece-b3450062d52d') }}
+    dreamhost_control_openstack_username: >-
+      {{ lookup('bitwarden.secrets.lookup',
+                'ab7e13be-95b3-47b0-be25-b3450062720a') }}
     dreamhost_control_plane_endpoint: control.cluster.wust.us
     dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
     dreamhost_dns_zone: wust.us

@@ -1,0 +1,24 @@
+<cib admin_epoch="0" epoch="2" num_updates="0" validate-with="pacemaker-3.1">
+  <configuration>
+    <crm_config/>
+    <nodes/>
+    <resources>
+      <primitive id="kube-control-plane-stonith" class="stonith" type="fence_openstack">
+        <meta_attributes id="kube-control-plane-stonith-meta_attributes"/>
+        <instance_attributes id="kube-control-plane-stonith-instance_attributes">
+          <nvpair id="kube-control-plane-stonith-instance_attributes-auth_url" name="auth_url" value="{{ dreamhost_control_openstack_auth_url }}"/>
+          <nvpair id="kube-control-plane-stonith-instance_attributes-password" name="password" value="{{ dreamhost_control_openstack_password }}"/>
+          <nvpair id="kube-control-plane-stonith-instance_attributes-project_name" name="project_name" value="{{ dreamhost_control_openstack_project_name }}"/>
+          <nvpair id="kube-control-plane-stonith-instance_attributes-user_domain_name" name="user_domain_name" value="Default"/>
+          <nvpair id="kube-control-plane-stonith-instance_attributes-username" name="username" value="{{ dreamhost_control_openstack_username }}"/>
+          <nvpair id="kube-control-plane-stonith-instance_attributes-pcmk_host_map" name="pcmk_host_map" value="{{ dreamhost_control_openstack_host_map }}"/>
+        </instance_attributes>
+        <operations>
+          <op name="monitor" interval="60s" id="kube-control-plane-stonith-monitor-interval-60s"/>
+        </operations>
+      </primitive>
+    </resources>
+    <constraints/>
+  </configuration>
+  <status/>
+</cib>
