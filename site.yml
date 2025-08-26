@@ -12,6 +12,7 @@
   gather_facts: true
   become: true
   serial: 1
+  tags: dreamcompute_patch
   vars:
   # Configure access to internal network hosts
     ansible_host: |-
