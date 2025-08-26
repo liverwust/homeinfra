@@ -24,6 +24,12 @@
     path: /var/lib/pcsd/known-hosts
   register: k8s_nodes_pcs_known_hosts
 
+# https://serverfault.com/questions/1060604/pcs-creating-cluster-fails-because-of-unknown-hosts
+- name: If not yet configured, expressly deconfigure any stub cluster
+  ansible.builtin.command: >-
+    /usr/sbin/pcs cluster destroy --force
+  when: 'not k8s_nodes_pcs_known_hosts.stat.exists'
+
 - name: Authenticate against each remote cluster host
   ansible.builtin.command: >-
     /usr/sbin/pcs host auth
