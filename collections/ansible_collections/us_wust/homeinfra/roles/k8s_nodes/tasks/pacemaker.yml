@@ -9,6 +9,7 @@
       - pcs
       - python3-keystoneclient
       - python3-novaclient
+      - python3-openstackclient
 
 - name: Enable the pcs service
   ansible.builtin.service:
