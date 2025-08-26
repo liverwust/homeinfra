@@ -18,3 +18,19 @@
   ansible.builtin.user:
     name: "hacluster"
     password: "{{ k8s_nodes_hacluster_password_hash }}"
+
+- name: Check whether the cluster nodes can talk to each other yet
+  ansible.builtin.stat:
+    path: /var/lib/pcsd/known-hosts
+  register: k8s_nodes_pcs_known_hosts
+
+- name: Authenticate against each remote cluster host
+  ansible.builtin.command: >-
+    /usr/sbin/pcs host auth
+    {{ k8s_nodes_pcs_item }}
+    -u hacluster
+    -p {{ hostvars[k8s_nodes_pcs_item]["k8s_nodes_hacluster_password_plain"] }}
+  loop: "{{ groups['dreamcompute_control'] }}"
+  loop_control:
+    loop_var: k8s_nodes_pcs_item
+  when: 'not k8s_nodes_pcs_known_hosts.stat.exists'
