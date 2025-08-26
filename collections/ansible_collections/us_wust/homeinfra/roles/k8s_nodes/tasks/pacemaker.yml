@@ -40,3 +40,35 @@
   loop_control:
     loop_var: k8s_nodes_pcs_item
   when: 'not k8s_nodes_pcs_known_hosts.stat.exists'
+
+- name: Check whether the corosync cluster was established yet
+  ansible.builtin.stat:
+    path: /etc/corosync/corosync.conf
+  register: k8s_nodes_pcs_corosync_conf
+
+- name: Setup the cluster from the first node (alphabetically)
+  ansible.builtin.command: >-
+    /usr/sbin/pcs cluster setup
+    kube-control-plane-cluster
+    {{ groups["dreamcompute_control"] | join(" ") }}
+  when:
+    - 'not k8s_nodes_pcs_corosync_conf.stat.exists'
+    - >-
+      inventory_hostname ==
+      (groups["dreamcompute_control"] |
+       sort |
+       first)
+
+# As recommended here, don't _enable_ services, just _start_ them from Ansible:
+# https://clusterlabs.org/projects/pacemaker/doc/3.0/Clusters_from_Scratch/html/verification.html
+- name: Start up the corosync service
+  ansible.builtin.service:
+    name: corosync.service
+    enabled: false
+    state: started
+
+- name: Start up the pacemaker service
+  ansible.builtin.service:
+    name: pacemaker.service
+    enabled: false
+    state: started
