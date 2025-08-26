@@ -1,0 +1,22 @@
+---
+# Update the Kubernetes nodes operating systems
+
+- name: Update all repositories
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Upgrade all installed packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+- name: Check for the reboot status file
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: k8s_nodes_update_reboot_stat
+
+- name: Reboot the computer post-upgrade OR if forced
+  ansible.builtin.reboot:
+  when: |-
+    k8s_nodes_update_reboot_stat.stat.exists or
+    dreamhost_reboot | default(False)

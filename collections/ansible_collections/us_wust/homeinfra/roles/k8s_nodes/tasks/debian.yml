@@ -1,25 +1,5 @@
 ---
-# Basic Debian tasks for package upgrades, etc.
-
-- name: Update all repositories
-  ansible.builtin.apt:
-    update_cache: true
-
-- name: Upgrade all installed packages
-  ansible.builtin.apt:
-    name: "*"
-    state: latest
-
-- name: Check for the reboot status file
-  ansible.builtin.stat:
-    path: /var/run/reboot-required
-  register: dreamhost_reboot_stat
-
-- name: Reboot the computer post-upgrade OR if forced
-  ansible.builtin.reboot:
-  when: |-
-    dreamhost_reboot_stat.stat.exists or
-    dreamhost_reboot | default(False)
+# Basic Debian tasks for package installations, etc.
 
 - name: Install extra packages
   ansible.builtin.apt:
