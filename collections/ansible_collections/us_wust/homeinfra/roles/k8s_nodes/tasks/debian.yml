@@ -116,3 +116,8 @@
   loop: "{{ hostvars['localhost']['dreamhost_access_ipv4'] | dict2items }}"
   loop_control:
     loop_var: k8s_nodes_item
+
+- name: Set the ansible_user's password for recovery purposes
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    password: "{{ dreamhost_user_password_hash }}"

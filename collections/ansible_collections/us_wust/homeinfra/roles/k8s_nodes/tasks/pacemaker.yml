@@ -7,4 +7,14 @@
       - pacemaker
       - pacemaker-cli-utils
       - pcs
-  when: k8s_nodes_is_control
+
+- name: Enable the pcs service
+  ansible.builtin.service:
+    name: pcsd.service
+    enabled: true
+    state: started
+
+- name: Set the hacluster user's password for recovery purposes
+  ansible.builtin.user:
+    name: "hacluster"
+    password: "{{ k8s_nodes_hacluster_password_hash }}"

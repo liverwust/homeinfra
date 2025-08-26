@@ -10,6 +10,9 @@ all:
                 '7c19bcfc-f2f6-4b69-95fd-b34100593a6f') }}
     dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
     dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
+    dreamhost_user_password_hash: >-
+      {{ lookup('bitwarden.secrets.lookup',
+                'f499e16a-f16d-4688-8a40-b3450047ebd9') }}
     dreamhost_version_crio: v1.33
     dreamhost_version_kubernetes: v1.33
     # This is an emergent property of the dreamhost_instance_image
@@ -38,6 +41,23 @@ all:
         port_range_min: 22
         port_range_max: 22
         protocol: tcp
+        remote_ip_prefix: "{{ dreamhost_network_private_range }}"
+
+      # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/high_availability_add-on_reference/s1-firewalls-haar
+      - description: pcsd between nodes from private network
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 2224
+        port_range_max: 2224
+        protocol: tcp
+        remote_ip_prefix: "{{ dreamhost_network_private_range }}"
+
+      - description: corosync between nodes from private network
+        direction: ingress
+        ether_type: IPv4
+        port_range_min: 4505
+        port_range_max: 4505
+        protocol: udp
         remote_ip_prefix: "{{ dreamhost_network_private_range }}"
 
       - description: Kubernetes API service from the private network
@@ -89,16 +109,34 @@ all:
               dreamhost_volume_key: >-
                 {{ lookup('bitwarden.secrets.lookup',
                           '2c41c46d-ff42-41b9-9601-b341004810c7') }}
+              k8s_nodes_hacluster_password_hash: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          '73543ae0-a32f-4af7-92cd-b3450049a06a') }}
+              k8s_nodes_hacluster_password_plain: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          '7a5cb334-e633-4db1-9472-b3450049bcbc') }}
 
             control2.cluster.wust.us:
               dreamhost_volume_key: >-
                 {{ lookup('bitwarden.secrets.lookup',
                           'cdec8106-a73c-418c-b15c-b34100497ee7') }}
+              k8s_nodes_hacluster_password_hash: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          'f5c4ec16-f46d-4247-9d5b-b3450049d5ab') }}
+              k8s_nodes_hacluster_password_plain: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          'ba61ff0f-ce83-42c5-913d-b3450049f3bc') }}
 
             control3.cluster.wust.us:
               dreamhost_volume_key: >-
                 {{ lookup('bitwarden.secrets.lookup',
                           'e9beaf4f-8742-4625-94d1-b3410049c833') }}
+              k8s_nodes_hacluster_password_hash: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          'c02aa2f1-8c00-4e71-a518-b345004a120f') }}
+              k8s_nodes_hacluster_password_plain: >-
+                {{ lookup('bitwarden.secrets.lookup',
+                          '734a7bbf-dd22-4336-a324-b345004a2b62') }}
 
           vars:
             dreamhost_instance_flavor: "gp1.lightspeed"
