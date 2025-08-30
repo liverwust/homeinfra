@@ -63,10 +63,10 @@
   roles:
     - us_wust.homeinfra.k8s_nodes
 
-#- name: Apply QNAP NAS configuration
-#  hosts: nas
-#  gather_facts: true
-#  roles:
-#    - us_wust.homeinfra.nas
-#
+- name: Apply QNAP NAS configuration
+  hosts: nas
+  gather_facts: true
+  roles:
+    - us_wust.homeinfra.nas
+
 ...
