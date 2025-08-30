@@ -66,6 +66,7 @@
 - name: Apply QNAP NAS configuration
   hosts: nas
   gather_facts: true
+  become: true
   roles:
     - us_wust.homeinfra.nas
 
