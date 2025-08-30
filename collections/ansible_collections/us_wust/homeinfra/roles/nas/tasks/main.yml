@@ -1,6 +1,9 @@
 ---
 # Entry point for us_wust.homeinfra.nas role
 
+- name: Basic Debian tasks, including patching
+  ansible.builtin.import_tasks: debian.yml
+
 - name: Create directory structure for container configurations
   ansible.builtin.file:
     path: "{{ nas_container_folder }}/{{ item }}"
@@ -10,12 +13,16 @@
     - user-config
     - user-config/database
     - user-config/database/initdb.d
+  when: false
 
 - name: Lay down files containing secrets
-  ansible.builtin.import_tasks: secrets.yml
+  ansible.builtin.include_tasks: secrets.yml
+  when: false
 
 - name: Lay down initialization scripts for PostgreSQL
-  ansible.builtin.import_tasks: initdb.yml
+  ansible.builtin.include_tasks: initdb.yml
+  when: false
 
 - name: Lay down Bacula configuration files
-  ansible.builtin.import_tasks: bacula.yml
+  ansible.builtin.include_tasks: bacula.yml
+  when: false
