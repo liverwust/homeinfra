@@ -4,17 +4,6 @@
 - name: Basic Debian tasks, including patching
   ansible.builtin.import_tasks: debian.yml
 
-- name: Create directory structure for container configurations
-  ansible.builtin.file:
-    path: "{{ nas_container_folder }}/{{ item }}"
-    state: directory
-    mode: "0755"
-  loop:
-    - user-config
-    - user-config/database
-    - user-config/database/initdb.d
-  when: false
-
 - name: Lay down files containing secrets
   ansible.builtin.include_tasks: secrets.yml
   when: false
