@@ -14,3 +14,8 @@
   ansible.builtin.include_tasks: dns_overwrite.yml
   vars:
     k8s_nodes_dns_overwrite_name: "{{ dreamhost_control_plane_endpoint }}"
+
+- name: Delete and recreate (if necessary) the data-plane DNS name
+  ansible.builtin.include_tasks: dns_overwrite.yml
+  vars:
+    k8s_nodes_dns_overwrite_name: "{{ dreamhost_data_plane_endpoint }}"

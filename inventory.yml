@@ -24,6 +24,13 @@ all:
           {{ lookup('bitwarden.secrets.lookup',
                     'ab7e13be-95b3-47b0-be25-b3450062720a') }}
         dreamhost_control_plane_endpoint: control.cluster.wust.us
+        dreamhost_control_plane_floating_ip: >-
+          {{ lookup('bitwarden.secrets.lookup',
+                    '3a6c666b-4d59-4666-9493-b35000f7f057') }}
+        dreamhost_data_plane_endpoint: wust.us
+        dreamhost_data_plane_floating_ip: >-
+          {{ lookup('bitwarden.secrets.lookup',
+                    '3839fda2-d53c-4deb-98fc-b35000f80daa') }}
         dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
         dreamhost_dns_zone: wust.us
         dreamhost_instance_image: "Debian-12"

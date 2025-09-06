@@ -6,6 +6,17 @@
   openstack.cloud.floating_ip_info:
   register: dreamcompute_floating_ips_results
 
+- name: Check that the floating IPs match the ones from the secrets manager
+  ansible.builtin.fail:
+    msg: "Please reconfigure {control,data}_plane_floating_ip secrets to match reality"
+  when: |
+    (dreamcompute_floating_ips_results.floating_ips |
+     map(attribute='floating_ip_address') |
+     sort) !=
+    ([dreamhost_control_plane_floating_ip,
+      dreamhost_data_plane_floating_ip] |
+     sort)
+
 - name: Identify the control-plane node to which a floating IP is attached
   ansible.builtin.set_fact:
     dreamcompute_floating_ip_control_node: "{{ dreamcompute_item[1] }}"
@@ -21,6 +32,7 @@
 
 - name: Attach floating IP to the identified control-plane node
   openstack.cloud.floating_ip:
+    floating_ip_address: "{{ dreamhost_control_plane_floating_ip }}"
     network: public
     reuse: true
     # If no control-plane node was identified, just pick the first one and
@@ -31,10 +43,12 @@
                  first) }}
   register: dreamcompute_floating_ip_result
 
-- name: Report the ipv4 address for the control plane endpoint, for later use
+- name: Report the ipv4 addresses for the control and data plane endpoints, for later use
   ansible.builtin.set_fact:
     dreamhost_access_ipv4: |-
       {{ dreamhost_access_ipv4 | combine({
          dreamhost_control_plane_endpoint:
-         dreamcompute_floating_ip_result.floating_ip.floating_ip_address
+         dreamhost_control_plane_floating_ip,
+         dreamhost_worker_plane_endpoint:
+         dreamhost_data_plane_floating_ip
          }) }}
