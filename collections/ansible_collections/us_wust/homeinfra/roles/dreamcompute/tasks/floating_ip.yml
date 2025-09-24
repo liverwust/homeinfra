@@ -49,6 +49,6 @@
       {{ dreamhost_access_ipv4 | combine({
          dreamhost_control_plane_endpoint:
          dreamhost_control_plane_floating_ip,
-         dreamhost_worker_plane_endpoint:
+         dreamhost_data_plane_endpoint:
          dreamhost_data_plane_floating_ip
          }) }}
