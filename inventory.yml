@@ -1,6 +1,5 @@
 all:
   vars:
-    ansible_user: debian
     dreamhost_control_openstack_auth_url: >-
       {{ lookup('bitwarden.secrets.lookup',
                 '1c452ae9-7795-4bed-9049-b34500629d9c') }}
@@ -119,7 +118,6 @@ all:
     nas:
       hosts:
         brikblok:
-          ansible_user: louis
           ansible_become_password: >-
             {{ lookup('bitwarden.secrets.lookup',
                       '0fb7325e-0cec-4c4c-bd32-b3490101997f') }}
@@ -213,6 +211,7 @@ all:
                           'd326d48d-0586-4ba5-9f86-b341004a5c68') }}
 
           vars:
+            ansible_user: debian
             dreamhost_instance_flavor: "gp1.lightspeed"
             k8s_nodes_volume_size: 20
             k8s_nodes_is_control: false
