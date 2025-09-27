@@ -1,11 +1,24 @@
 ---
 
+- name: Get the IPv4 address of the Ansible Control Node
+  hosts: localhost
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Store the IPv4 address as a hostvar
+      ansible.builtin.set_fact:
+        ansible_control_node_external_ipv4: |-
+          {{ (lookup('ansible.builtin.url',
+                     'https://api.ipify.org?format=json',
+                     split_lines=False) |
+              from_json).ip }}
+
 - name: Configure DreamCompute cloud resources
   hosts: localhost
   gather_facts: false
   become: false
   roles:
-    - us_wust.homeinfra.dreamcompute
+    - us_wust.homeinfra.dreamhost
 
 - name: Patch Kubernetes nodes
   hosts: dreamcompute

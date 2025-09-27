@@ -44,7 +44,7 @@ all:
         port_range_min: 22
         port_range_max: 22
         protocol: tcp
-        remote_ip_prefix: "{{ ansible_control_node_external_ipv4 }}/32"
+        remote_ip_prefix: "{{ hostvars['localhost']['ansible_control_node_external_ipv4'] }}/32"
 
       - description: Kubernetes API service from the Ansible Control Node IPv4
         direction: ingress
@@ -52,7 +52,7 @@ all:
         port_range_min: 6443
         port_range_max: 6443
         protocol: tcp
-        remote_ip_prefix: "{{ ansible_control_node_external_ipv4 }}/32"
+        remote_ip_prefix: "{{ hostvars['localhost']['ansible_control_node_external_ipv4'] }}/32"
 
       - description: Inter-node SSH from the private network
         direction: ingress

@@ -9,8 +9,9 @@ dependencies = [
     "bitwarden-sdk",
     "dnspython>=2.7.0",
     "ipaddress>=1.0.23",
+    "openstacksdk>=4.7.1",
     "xmltodict>=1.0.2",
 ]
 
 [tool.uv.sources]
-bitwarden-sdk = { git = "https://github.com/bitwarden/sdk-sm.git", subdirectory = "languages/python", branch = "main" }
+bitwarden-sdk = { path = "../sdk-sm/languages/python" }
