@@ -1,0 +1,32 @@
+---
+# Group vars for Kubernetes control-plane nodes.
+
+k8s_nodes_ssh_host_keys:
+  - algorithm: dsa
+    private_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                'cb560387-96ef-48ed-959a-b34300673bd5') }}
+    public_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                'b753e47c-42d1-4ef8-8d88-b343006765b1') }}
+  - algorithm: ecdsa
+    private_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                '0feb2f30-dc05-4976-8d99-b34300678fd8') }}
+    public_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                '3574bd04-d271-4bba-97d1-b3430067b013') }}
+  - algorithm: ed25519
+    private_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                '91e3d1fa-8bb1-4507-9402-b3430067cfc1') }}
+    public_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                'e931a770-40f1-4e87-aeed-b3430067f4a7') }}
+  - algorithm: rsa
+    private_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                'eb9b5cb9-7b76-4332-ac73-b343006813fc') }}
+    public_key: |
+      {{ lookup('bitwarden.secrets.lookup',
+                'd7951db9-9fab-4909-be59-b343006833ab') }}

@@ -11,6 +11,9 @@
   ansible.builtin.include_tasks: pacemaker.yml
   when: k8s_nodes_is_control
 
+- name: Patch the Debian guest OS, interacting with PCS as needed
+  ansible.builtin.include_tasks: patch.yml
+
 - name: Configure the Kubernetes and CRI-O packages
   ansible.builtin.import_tasks: k8s_packages.yml
 

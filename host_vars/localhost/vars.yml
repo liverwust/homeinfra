@@ -1,0 +1,36 @@
+---
+# localhost has host_vars because it is used to configure the DreamHost DNS and
+# DreamCompute API resources.
+
+# See also dreamhost_control_plane_endpoint in group_vars/all.yml
+dreamhost_control_plane_floating_ip: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            '3a6c666b-4d59-4666-9493-b35000f7f057') }}
+dreamhost_data_plane_floating_ip: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            '3839fda2-d53c-4deb-98fc-b35000f80daa') }}
+
+dreamhost_dns_api_key: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            'd6405907-9cdb-43e0-9323-b36500fa1d86') }}
+dreamhost_dns_zone: wust.us
+
+# See also dreamhost_data_plane_endpoint in group_vars/all.yml
+dreamhost_openstack_auth_url: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            '1c452ae9-7795-4bed-9049-b34500629d9c') }}
+dreamhost_openstack_password: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            '56dfd850-5420-4901-bfc0-b34500624030') }}
+dreamhost_openstack_project_name: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            'ef1237b6-f31d-494e-bece-b3450062d52d') }}
+dreamhost_openstack_username: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            'ab7e13be-95b3-47b0-be25-b3450062720a') }}
+
+dreamhost_network_private_range: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            '7c19bcfc-f2f6-4b69-95fd-b34100593a6f') }}
+dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
+dreamhost_public_key: '{{ dreamhost_private_key }}.pub'

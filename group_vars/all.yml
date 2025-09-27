@@ -1,0 +1,13 @@
+---
+# Some variables need to be visible across the majority of tasks and hosts. In
+# this case, the variables are sometimes specified multiple times to be made
+# available to the various us_wust.homeinfra roles.
+
+dreamhost_control_plane_endpoint: control.cluster.wust.us
+dreamhost_data_plane_endpoint: wust.us
+
+# These can be overridden at the group or the host level if desired. They are
+# listed at the top-level because they need to be visible to localhost while
+# interacting with the DreamCompute API.
+dreamhost_instance_flavor: "gp1.lightspeed"
+dreamhost_instance_image: "Debian-12"

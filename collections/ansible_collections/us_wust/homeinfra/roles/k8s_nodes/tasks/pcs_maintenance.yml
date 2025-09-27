@@ -1,0 +1,16 @@
+---
+# Ensure that the remote Pacemaker / Corosync node has no resources before
+# continuing. This includes placing it into maintenance mode, but we also have
+# to wait for all resources to go away.
+
+- name: Obtain the pcs cluster XML status
+  ansible.utils.cli_parse:
+    command: /usr/sbin/pcs status xml
+    parser:
+      name: ansible.utils.xml
+  register: k8s_nodes_update_pcs_command
+  when:
+    - k8s_nodes_update_pcs_stat.stat.exists
+    - |
+      k8s_nodes_update_reboot_stat.stat.exists or
+      dreamhost_reboot | default(False)
