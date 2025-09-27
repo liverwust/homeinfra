@@ -3,6 +3,14 @@
 Configure resources in DreamHost APIs and the DreamCompute OpenStack for
 virtual machines, volumes, networks, and related virtualization objects.
 
+## Requirements
+
+The
+[openstack.cloud](https://docs.ansible.com/ansible/latest/collections/openstack/cloud/index.html)
+collection requires that the
+[openstacksdk](https://pypi.org/project/openstacksdk/) Python package be
+installed.
+
 ## Role Variables
 
 ```yaml

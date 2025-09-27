@@ -1,44 +1,133 @@
-us\_wust.homeinfra.k8s_nodes
-============================
+# us_wust.homeinfra.k8s_nodes
 
-Configure my DreamHost dedicated/virtual server and/or its clone in a KVM
-staging environment.
+Configure Kubernetes control nodes and/or worker nodes (data-plane nodes) at
+the level of operating system infrastructure. This includes some configuration
+for the Corosync/Pacemaker cluster configuration.
 
-Requirements
-------------
+## Requirements
 
-* ansible-core
+The
+[openstack.cloud](https://docs.ansible.com/ansible/latest/collections/openstack/cloud/index.html)
+collection requires that the
+[openstacksdk](https://pypi.org/project/openstacksdk/) Python package be
+installed.
 
-Please set up an openstacksdk configuration file at `~/.config/openstack/yaml`
-as described here:
+This role assumes that control node hosts will belong to an Ansible hostname
+`dreamcompute_control`, and that they also set their `k8s_nodes_is_control`
+variable to true.
 
-https://docs.openstack.org/openstacksdk/latest/user/config/configuration.html
+## Role Variables
 
-Role Variables
---------------
+```yaml
+k8s_nodes_hacluster_password_hash:
+  description:
+    - Unix-crypted password hash which will be assigned to the hacluster
+      user on the remote machines.
+    - This is not an interactive account, but is instead a service
+      account for the pcs service.
+  type: str
+  required: false
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+k8s_nodes_hacluster_password_plain:
+  description:
+    - Plaintext password which will be assigned to the hacluster user on
+      the remote machines.
+    - This is not an interactive account, but is instead a service
+      account for the pcs service.
+  type: str
+  required: false
 
-Dependencies
-------------
+k8s_nodes_is_control:
+  description:
+    - Set to true when dealing with a control-plane node; false when
+      dealing with a worker-plane or data-plane node.
+  type: bool
+  required: true
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+k8s_nodes_ssh_keys:
+  description:
+    - Shared sets of SSH host keypairs.
+    - By keeping these identifiers similar between cluster nodes, it is
+      possible to SSH to any one of them in a clustered arrangement
+      without needing to switch keys every time.
+  type: list
+  elements: dict
+  options:
+    algorithm:
+      description:
+        - Algorithm (e.g., ecdsa or ed25519) for this particular keypair.
+        - This information will feature into the generated filenames.
+      type: str
+      required: true
 
-Example Playbook
-----------------
+    public_key:
+      description:
+        - Contents of the private host key file.
+      type: str
+      required: true
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+    private_key:
+      description:
+        - Contents of the private host key file.
+      type: str
+      required: true
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+k8s_nodes_user_password_hash:
+  description:
+    - Unix-crypted password hash which will be assigned to the user on
+      the remote machines.
+    - This should be set in order to allow debugging of control-plane and
+      data-plane / worker-plane nodes thru the OpenStack console web
+      interface.
+  type: str
+  required: true
 
-License
--------
+k8s_nodes_version_crio:
+  description:
+    - Version number specification for the CRI-O packages to be
+      installed.
+    - Upgrades of cluster components are not to be done lightly; be sure
+      to read through the Release Notes when doing even a minor upgrade.
+  type: str
+  required: true
 
-BSD
+k8s_nodes_version_kubernetes:
+  description:
+    - Version number specification for the Kubernetes packages to be
+      installed.
+    - Upgrades of cluster components are not to be done lightly; be sure
+      to read through the Release Notes when doing even a minor upgrade.
+  type: str
+  required: true
 
-Author Information
-------------------
+k8s_nodes_volume_device:
+  description:
+    - Linux OS block device path which represents the mounted OpenStack
+      data volume.
+    - This is an emergent property of the underlying image and must be
+      determined empirically.
+  type: str
+  required: true
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+k8s_nodes_volume_key:
+  description:
+    - Encryption key for the LUKS-encrypted data volumes on each of the
+      virtualized guests in OpenStack.
+  type: str
+  required: true
+
+k8s_nodes_volume_size:
+  description:
+    - Size (in gigabytes) of the data volume attached to the Dreamhost
+      DreamCompute virtual machine instance.
+  type: int
+  required: true
+```
+
+## License
+
+The homeinfra project is released under the terms of the GPLv3+ License.
+
+## Author Information
+
+[@liverwust](https://github.com/liverwust)

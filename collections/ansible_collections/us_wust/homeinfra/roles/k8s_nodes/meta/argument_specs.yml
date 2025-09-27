@@ -1,0 +1,116 @@
+---
+
+argument_specs:
+  main:
+    short_description: Configure Kubernetes control/worker nodes
+    description:
+      - Configure Kubernetes control nodes and/or worker nodes (data-plane
+        nodes) at the level of operating system infrastructure.
+      - This includes some configuration for the Corosync/Pacemaker cluster
+        configuration.
+    author: 'Louis Wust <louiswust@fastmail.fm>'
+
+    options:
+      k8s_nodes_hacluster_password_hash:
+        description:
+          - Unix-crypted password hash which will be assigned to the hacluster
+            user on the remote machines.
+          - This is not an interactive account, but is instead a service
+            account for the pcs service.
+        type: str
+        required: false
+
+      k8s_nodes_hacluster_password_plain:
+        description:
+          - Plaintext password which will be assigned to the hacluster user on
+            the remote machines.
+          - This is not an interactive account, but is instead a service
+            account for the pcs service.
+        type: str
+        required: false
+
+      k8s_nodes_is_control:
+        description:
+          - Set to true when dealing with a control-plane node; false when
+            dealing with a worker-plane or data-plane node.
+        type: bool
+        required: true
+
+      k8s_nodes_ssh_keys:
+        description:
+          - Shared sets of SSH host keypairs.
+          - By keeping these identifiers similar between cluster nodes, it is
+            possible to SSH to any one of them in a clustered arrangement
+            without needing to switch keys every time.
+        type: list
+        elements: dict
+        options:
+          algorithm:
+            description:
+              - Algorithm (e.g., ecdsa or ed25519) for this particular keypair.
+              - This information will feature into the generated filenames.
+            type: str
+            required: true
+
+          public_key:
+            description:
+              - Contents of the private host key file.
+            type: str
+            required: true
+
+          private_key:
+            description:
+              - Contents of the private host key file.
+            type: str
+            required: true
+
+      k8s_nodes_user_password_hash:
+        description:
+          - Unix-crypted password hash which will be assigned to the user on
+            the remote machines.
+          - This should be set in order to allow debugging of control-plane and
+            data-plane / worker-plane nodes thru the OpenStack console web
+            interface.
+        type: str
+        required: true
+
+      k8s_nodes_version_crio:
+        description:
+          - Version number specification for the CRI-O packages to be
+            installed.
+          - Upgrades of cluster components are not to be done lightly; be sure
+            to read through the Release Notes when doing even a minor upgrade.
+        type: str
+        required: true
+
+      k8s_nodes_version_kubernetes:
+        description:
+          - Version number specification for the Kubernetes packages to be
+            installed.
+          - Upgrades of cluster components are not to be done lightly; be sure
+            to read through the Release Notes when doing even a minor upgrade.
+        type: str
+        required: true
+
+      k8s_nodes_volume_device:
+        description:
+          - Linux OS block device path which represents the mounted OpenStack
+            data volume.
+          - This is an emergent property of the underlying image and must be
+            determined empirically.
+        type: str
+        required: true
+
+      k8s_nodes_volume_key:
+        description:
+          - Encryption key for the LUKS-encrypted data volumes on each of the
+            virtualized guests in OpenStack.
+        type: str
+        required: true
+
+      k8s_nodes_volume_size:
+        description:
+          - Size (in gigabytes) of the data volume attached to the Dreamhost
+            DreamCompute virtual machine instance.
+        type: int
+        required: true

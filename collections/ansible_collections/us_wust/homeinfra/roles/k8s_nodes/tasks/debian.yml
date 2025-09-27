@@ -11,19 +11,19 @@
 
 - name: Set up the data volume partition
   community.general.parted:
-    device: "{{ dreamhost_volume_device }}"
+    device: "{{ k8s_nodes_volume_device }}"
     label: gpt
     name: kube-data-part
     number: 1
-    part_end: "{{ dreamhost_volume_size }}GB"
+    part_end: "{{ k8s_nodes_volume_size }}GB"
     resize: false
     state: present
 
 - name: Set up the LUKS encrypted volume container
   community.crypto.luks_device:
-    device: "{{ dreamhost_volume_device }}-part1"
+    device: "{{ k8s_nodes_volume_device }}-part1"
     name: dreamhost_volume_device_crypt
-    new_passphrase: "{{ dreamhost_volume_key }}"
+    new_passphrase: "{{ k8s_nodes_volume_key }}"
     passphrase_encoding: base64
     state: present
     type: luks2
@@ -31,7 +31,7 @@
 
 - name: Set up LUKS container to be unlocked manually after boot
   community.general.crypttab:
-    backing_device: "{{ dreamhost_volume_device }}-part1"
+    backing_device: "{{ k8s_nodes_volume_device }}-part1"
     name: dreamhost_volume_device_crypt
     # This Ansible playbook is used to unlock it
     opts: noauto
@@ -39,9 +39,9 @@
 
 - name: Open the LUKS encrypted volume container
   community.crypto.luks_device:
-    device: "{{ dreamhost_volume_device }}-part1"
+    device: "{{ k8s_nodes_volume_device }}-part1"
     name: dreamhost_volume_device_crypt
-    passphrase: "{{ dreamhost_volume_key }}"
+    passphrase: "{{ k8s_nodes_volume_key }}"
     passphrase_encoding: base64
     state: opened
   no_log: true
@@ -100,4 +100,4 @@
 - name: Set the ansible_user's password for recovery purposes
   ansible.builtin.user:
     name: "{{ ansible_user }}"
-    password: "{{ dreamhost_user_password_hash }}"
+    password: "{{ k8s_nodes_user_password_hash }}"

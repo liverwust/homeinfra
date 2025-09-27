@@ -11,7 +11,7 @@
     description: |-
       (Non-Ephemeral) Volume for cluster data for Kubernetes
     name: "{{ dreamhost_instance_name }}-data-volume"
-    size: "{{ hostvars[dreamhost_instance_name]['dreamhost_volume_size'] }}"
+    size: "{{ hostvars[dreamhost_instance_name]['k8s_nodes_volume_size'] }}"
 
 - name: Create the Virtual Machine for Kubernetes
   openstack.cloud.server:
@@ -25,7 +25,7 @@
     network: "kube-private-network"
     security_groups: "kube-security-group"
     terminate_volume: true
-    volume_size: "{{ hostvars[dreamhost_instance_name]['dreamhost_volume_size'] }}"
+    volume_size: "{{ hostvars[dreamhost_instance_name]['k8s_nodes_volume_size'] }}"
     volumes:
       - "{{ dreamhost_instance_name }}-data-volume"
   register: dreamhost_openstack_server

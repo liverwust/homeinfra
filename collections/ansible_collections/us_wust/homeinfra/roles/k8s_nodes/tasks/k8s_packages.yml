@@ -7,7 +7,7 @@
     keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     url: |
       {{ 'https://pkgs.k8s.io/core:/stable:/' ~
-         dreamhost_version_kubernetes ~
+         k8s_nodes_version_kubernetes ~
          '/deb/Release.key' }}
 
 - name: Add the Kubernetes repository
@@ -16,7 +16,7 @@
     repo: |
       {{ 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] ' ~
          'https://pkgs.k8s.io/core:/stable:/' ~
-         dreamhost_version_kubernetes ~
+         k8s_nodes_version_kubernetes ~
          '/deb/ /' }}
 
 - name: Add the CRI-O repository key
@@ -24,7 +24,7 @@
     keyring: /etc/apt/keyrings/cri-o-apt-keyring.gpg
     url: |
       {{ 'https://download.opensuse.org/repositories/isv:/cri-o:/stable:/' ~
-         dreamhost_version_crio ~
+         k8s_nodes_version_crio ~
          '/deb/Release.key' }}
 
 - name: Add the CRI-O repository
@@ -33,7 +33,7 @@
     repo: |
       {{ 'deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] '
          'https://download.opensuse.org/repositories/isv:/cri-o:/stable:/' ~
-         dreamhost_version_crio ~
+         k8s_nodes_version_crio ~
          '/deb/ /' }}
 
 - name: Install the packages for Kubernetes and CRI-O
