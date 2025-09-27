@@ -1,0 +1,169 @@
+# us_wust.homeinfra.dreamhost
+
+Configure resources in DreamHost APIs and the DreamCompute OpenStack for
+virtual machines, volumes, networks, and related virtualization objects.
+
+## Role Variables
+
+```yaml
+dreamhost_control_plane_endpoint:
+  description:
+    - DNS name or IPv4 address for the publicly-facing interface
+      associated with a floating IP on the control nodes.
+  type: str
+  required: true
+
+dreamhost_control_plane_floating_ip:
+  description:
+    - Floating IPv4 address associated with the control plane and the
+      control nodes.
+    - This doesn't have to be set initially, but it should eventually be
+      set once an IPv4 address has been assigned to our project from
+      DreamCompute's available pool.
+  type: str
+  required: false
+
+dreamhost_data_plane_endpoint:
+  description:
+    - DNS name or IPv4 address for the publicly-facing interface
+      associated with a floating IP on the worker nodes.
+  type: str
+  required: true
+
+dreamhost_dns_api_key:
+  description:
+    - API key for the DreamHost DNS hosted service.
+    - https://help.dreamhost.com/hc/en-us/articles/4407354972692-Connecting-to-the-DreamHost-API
+  type: str
+  required: true
+
+dreamhost_dns_zone:
+  description:
+    - Base domain for the DNS being managed in connection with my home
+      infrastructure and Kubernetes cluster.
+  type: str
+  required: true
+
+dreamhost_network_private_range:
+  description:
+    - Choose a network CIDR range (e.g., a /24) which will be used to
+      distribute IPv4 addresses for control-plane and data-plane nodes.
+    - This will be referred to by the name I(kube-private-subnet) in the
+      DreamCompute API and web interface.
+  type: str
+  required: true
+
+dreamhost_public_key:
+  description:
+    - Public SSH key associated with the keypair being used to remotely
+      access the control-plane and data-plane nodes.
+    - This will be referred to by the name I(kube-keypair) in the
+      DreamCompute API and web interface.
+  type: str
+  required: true
+
+# Security group rules are defined by the openstack.cloud collection:
+# https://opendev.org/openstack/ansible-collections-openstack/src/branch/master/plugins/modules/security_group.py
+dreamhost_security_group_rules:
+  description:
+    - List of security group rules.
+    - When I(security_group_rules) is not defined, Neutron might create
+      this security group with a default set of rules.
+    - Security group rules which are listed in I(security_group_rules)
+      but not defined in this security group will be created.
+    - When I(security_group_rules) is not set, existing security group
+      rules which are not listed in I(security_group_rules) will be
+      deleted.
+    - When updating a security group, one has to explicitly list rules
+      from Neutron's defaults in I(security_group_rules) if those rules
+      should be kept. Rules which are not listed in
+      I(security_group_rules) will be deleted.
+  type: list
+  elements: dict
+
+  options:
+    description:
+      description:
+        - Description of the security group rule.
+      type: str
+
+    direction:
+      description:
+        - The direction in which the security group rule is applied.
+        - Not all providers support C(egress).
+      choices: ['egress', 'ingress']
+      default: ingress
+      type: str
+
+    ether_type:
+      description:
+        - Must be IPv4 or IPv6, and addresses represented in CIDR must
+          match the ingress or egress rules. Not all providers support
+          IPv6.
+      choices: ['IPv4', 'IPv6']
+      default: IPv4
+      type: str
+
+    port_range_max:
+      description:
+        - The maximum port number in the range that is matched by the
+          security group rule.
+        - If the protocol is TCP, UDP, DCCP, SCTP or UDP-Lite this value
+          must be greater than or equal to the I(port_range_min)
+          attribute value.
+        - If the protocol is ICMP, this value must be an ICMP code.
+      type: int
+
+    port_range_min:
+      description:
+        - The minimum port number in the range that is matched by the
+          security group rule.
+        - If the protocol is TCP, UDP, DCCP, SCTP or UDP-Lite this value
+          must be less than or equal to the port_range_max attribute
+          value.
+        - If the protocol is ICMP, this value must be an ICMP type.
+      type: int
+
+    protocol:
+      description:
+        - The IP protocol can be represented by a string, an integer, or
+          null.
+        - Valid string or integer values are C(any) or C(0), C(ah) or
+          C(51), C(dccp) or C(33), C(egp) or C(8), C(esp) or C(50),
+          C(gre) or C(47), C(icmp) or C(1), C(icmpv6) or C(58), C(igmp)
+          or C(2), C(ipip) or C(4), C(ipv6-encap) or C(41), C(ipv6-frag)
+          or C(44), C(ipv6-icmp) or C(58), C(ipv6-nonxt) or C(59),
+          C(ipv6-opts) or C(60), C(ipv6-route) or C(43), C(ospf) or
+          C(89), C(pgm) or C(113), C(rsvp) or C(46), C(sctp) or C(132),
+          C(tcp) or C(6), C(udp) or C(17), C(udplite) or C(136), C(vrrp)
+          or C(112).
+        - Additionally, any integer value between C([0-255]) is also
+          valid.
+        - The string any (or integer 0) means all IP protocols.
+        - See the constants in neutron_lib.constants for the most
+          up-to-date list of supported strings.
+      type: str
+
+    remote_group:
+      description:
+        - Name or ID of the security group to link.
+        - Mutually exclusive with I(remote_ip_prefix).
+      type: str
+
+    remote_ip_prefix:
+      description:
+        - Source IP address(es) in CIDR notation.
+        - When a netmask such as C(/32) is missing from
+          I(remote_ip_prefix), then this module will fail on updates with
+          OpenStack error message C(Security group rule already exists.).
+        - Mutually exclusive with I(remote_group).
+      type: str
+```
+
+## License
+
+The homeinfra project is released under the terms of the GPLv3+ License.
+
+## Author Information
+
+[@liverwust](https://github.com/liverwust)
