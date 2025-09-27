@@ -22,19 +22,13 @@ all:
                 '3839fda2-d53c-4deb-98fc-b35000f80daa') }}
     dreamhost_dns_api_key: '{{ lookup("ansible.builtin.env", "DREAMHOST_DNS_API_KEY") }}'
     dreamhost_dns_zone: wust.us
+    dreamhost_instance_flavor: "gp1.lightspeed"
     dreamhost_instance_image: "Debian-12"
     dreamhost_network_private_range: >-
       {{ lookup('bitwarden.secrets.lookup',
                 '7c19bcfc-f2f6-4b69-95fd-b34100593a6f') }}
     dreamhost_private_key: '{{ lookup("ansible.builtin.env", "HOME") }}/.ssh/id_cloud'
     dreamhost_public_key: '{{ dreamhost_private_key }}.pub'
-    k8s_nodes_user_password_hash: >-
-      {{ lookup('bitwarden.secrets.lookup',
-                'f499e16a-f16d-4688-8a40-b3450047ebd9') }}
-    k8s_nodes_version_crio: v1.33
-    k8s_nodes_version_kubernetes: v1.33
-    # This is an emergent property of the dreamhost_instance_image
-    k8s_nodes_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
 
     dreamhost_security_group_rules:
       - description: Inbound SSH from the Ansible Control Node IPv4
@@ -212,6 +206,11 @@ all:
 
           vars:
             ansible_user: debian
-            dreamhost_instance_flavor: "gp1.lightspeed"
-            k8s_nodes_volume_size: 20
             k8s_nodes_is_control: false
+            k8s_nodes_user_password_hash: >-
+              {{ lookup('bitwarden.secrets.lookup',
+                        'f499e16a-f16d-4688-8a40-b3450047ebd9') }}
+            k8s_nodes_version_crio: v1.33
+            k8s_nodes_version_kubernetes: v1.33
+            k8s_nodes_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
+            k8s_nodes_volume_size: 20
