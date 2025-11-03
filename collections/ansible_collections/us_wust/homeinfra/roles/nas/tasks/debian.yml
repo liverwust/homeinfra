@@ -20,6 +20,7 @@
       - popularity-contest
       - shim-signed
       - systemd-timesyncd
+      - uidmap
       - zfs-initramfs
     state: present
 

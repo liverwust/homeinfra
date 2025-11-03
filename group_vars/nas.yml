@@ -4,3 +4,7 @@
 ansible_become_password: >-
   {{ lookup('bitwarden.secrets.lookup',
             '0fb7325e-0cec-4c4c-bd32-b3490101997f') }}
+
+dockerdaemon_password_hash: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            '9b36bddf-e62a-4465-9fff-b38a0053dc89') }}

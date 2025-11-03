@@ -36,3 +36,49 @@
     name: docker.socket
     state: stopped
     enabled: false
+
+- name: Create dockerdaemon group (distinct from docker group)
+  ansible.builtin.group:
+    name: dockerdaemon
+    system: true
+
+- name: Create dockerdaemon user
+  ansible.builtin.user:
+    name: dockerdaemon
+    group: dockerdaemon
+    password: "{{ dockerdaemon_password_hash }}"
+    shell: /bin/bash
+    system: true
+
+- name: Insert a line into subuid for the dockerdaemon user
+  ansible.builtin.lineinfile:
+    path: /etc/subuid
+    line: "dockerdaemon:4390912:65536"
+
+- name: Insert a line into subgid for the dockerdaemon user
+  ansible.builtin.lineinfile:
+    path: /etc/subgid
+    line: "dockerdaemon:4390912:65536"
+
+# https://www.reddit.com/r/systemd/comments/suaa5x/comment/ly4c2gq/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+- name: Enable lingering for the dockerdaemonuser
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/loginctl
+      - enable-linger
+      - dockerdaemon
+    creates: /var/lib/systemd/linger/dockerdaemon
+
+- name: Check for the existence of the user-specific docker.service
+  ansible.builtin.stat:
+    path: /home/dockerdaemon/.config/systemd/user/docker.service
+  register: nas_dockerdaemon_service_file
+
+- name: Alert the user if the setup script wasn't yet run
+  ansible.builtin.assert:
+    that:
+      - "nas_dockerdaemon_service_file.stat.exists"
+      - "nas_dockerdaemon_service_file.stat.isreg"
+    fail_msg: >-
+      Follow the steps on https://docs.docker.com/engine/security/rootless/
+      to run dockerd-rootless-setuptool.sh as the dockerdaemon user.
