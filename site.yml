@@ -20,25 +20,25 @@
   roles:
     - us_wust.homeinfra.dreamhost
 
-- name: Patch Kubernetes nodes
-  hosts: dreamcompute
-  gather_facts: true
-  become: true
-  serial: 1
-  tags: dreamcompute_patch
-  vars:
-  # Configure access to internal network hosts
-    ansible_host: |-
-      {{ hostvars['localhost']['dreamhost_access_ipv4'][inventory_hostname] }}
-
-    # https://www.jeffgeerling.com/blog/2022/using-ansible-playbook-ssh-bastion-jump-host
-    ansible_ssh_common_args: |-
-      {{ '-o ProxyCommand="ssh -W %h:%p -q debian@' ~
-         hostvars['localhost']['dreamhost_access_ipv4'][dreamhost_control_plane_endpoint] ~
-         '"' }}
-
-  roles:
-    - us_wust.homeinfra.k8s_nodes_update
+#- name: Patch Kubernetes nodes
+#  hosts: dreamcompute
+#  gather_facts: true
+#  become: true
+#  serial: 1
+#  tags: dreamcompute_patch
+#  vars:
+#  # Configure access to internal network hosts
+#    ansible_host: |-
+#      {{ hostvars['localhost']['dreamhost_access_ipv4'][inventory_hostname] }}
+#
+#    # https://www.jeffgeerling.com/blog/2022/using-ansible-playbook-ssh-bastion-jump-host
+#    ansible_ssh_common_args: |-
+#      {{ '-o ProxyCommand="ssh -W %h:%p -q debian@' ~
+#         hostvars['localhost']['dreamhost_access_ipv4'][dreamhost_control_plane_endpoint] ~
+#         '"' }}
+#
+#  roles:
+#    - us_wust.homeinfra.k8s_nodes_update
 
 - name: Configure Kubernetes control nodes
   hosts: dreamcompute_control
