@@ -26,7 +26,7 @@
   loop: |
     {{ dreamcompute_floating_ips_results.floating_ips |
        map(attribute='fixed_ip_address') |
-       product(groups['dreamcompute_control']) }}
+       product(groups['k8s_control_plane']) }}
   loop_control:
     loop_var: dreamcompute_item
 
@@ -39,7 +39,7 @@
     # attach it there arbitrarily
     server: |-
       {{ dreamcompute_floating_ip_control_node |
-         default(groups["dreamcompute_control"] |
+         default(groups["k8s_control_plane"] |
                  first) }}
   register: dreamcompute_floating_ip_result
 

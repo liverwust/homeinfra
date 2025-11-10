@@ -39,7 +39,7 @@
     {{ k8s_nodes_pcs_item }}
     -u hacluster
     -p {{ hostvars[k8s_nodes_pcs_item]["k8s_nodes_hacluster_password_plain"] }}
-  loop: "{{ groups['dreamcompute_control'] }}"
+  loop: "{{ groups['k8s_control_plane'] }}"
   loop_control:
     loop_var: k8s_nodes_pcs_item
   when: 'not k8s_nodes_pcs_known_hosts.stat.exists'
@@ -53,12 +53,12 @@
   ansible.builtin.command: >-
     /usr/sbin/pcs cluster setup
     kube-control-plane-cluster
-    {{ groups["dreamcompute_control"] | join(" ") }}
+    {{ groups["k8s_control_plane"] | join(" ") }}
   when:
     - 'not k8s_nodes_pcs_corosync_conf.stat.exists'
     - >-
       inventory_hostname ==
-      (groups["dreamcompute_control"] |
+      (groups["k8s_control_plane"] |
        sort |
        first)
 

@@ -41,7 +41,7 @@
 #    - us_wust.homeinfra.k8s_nodes_update
 
 - name: Configure Kubernetes control nodes
-  hosts: dreamcompute_control
+  hosts: k8s_control_plane
   gather_facts: true
   become: true
   vars:
@@ -59,7 +59,7 @@
     - us_wust.homeinfra.k8s_nodes
 
 - name: Configure Kubernetes worker nodes
-  hosts: dreamcompute_worker
+  hosts: k8s_data_plane
   gather_facts: true
   become: true
   vars:
