@@ -21,7 +21,6 @@
       - shim-signed
       - systemd-timesyncd
       - uidmap
-      - wireguard
       - zfs-initramfs
     state: present
 
