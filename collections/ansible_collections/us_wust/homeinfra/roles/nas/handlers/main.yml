@@ -1,0 +1,7 @@
+---
+# Handlers for QNAP NAS
+
+- name: Restart rootful Docker service
+  ansible.builtin.systemd_service:
+    name: docker.service
+    state: restarted

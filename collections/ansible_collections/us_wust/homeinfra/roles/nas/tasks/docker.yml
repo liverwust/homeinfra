@@ -22,17 +22,23 @@
      - docker-compose-plugin
     state: present
 
-# Run rootless
-# https://docs.docker.com/engine/security/rootless/
-
-- name: Terminate rootful Docker service
+- name: Setup rootful Docker service
   ansible.builtin.systemd_service:
     name: docker.service
-    state: stopped
-    enabled: false
+    state: started
+    enabled: true
 
-- name: Terminate rootful Docker socket
+- name: Setup rootful Docker socket
   ansible.builtin.systemd_service:
     name: docker.socket
-    state: stopped
-    enabled: false
+    state: started
+    enabled: true
+
+- name: Lay down daemon.json to disable userland proxy
+  ansible.builtin.copy:
+    src: etc/docker/daemon.json
+    dest: /etc/docker/daemon.json
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart rootful Docker service
