@@ -24,6 +24,12 @@
       - zfs-initramfs
     state: present
 
+- name: Load wireguard kernel module now and at boot
+  community.general.modprobe:
+    name: wireguard
+    persistent: present
+    state: present
+
 - name: Upgrade all installed packages
   ansible.builtin.apt:
     name: "*"
