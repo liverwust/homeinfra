@@ -2,7 +2,7 @@ all:
   children:
     nas:
       hosts:
-        brikblok:
+        jilliumz.amy.internal.wust.us:
 
     k8s:
       children:

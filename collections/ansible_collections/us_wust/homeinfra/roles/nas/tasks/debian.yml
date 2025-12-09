@@ -40,70 +40,6 @@
     path: /var/run/reboot-required
   register: nas_reboot_stat
 
-- name: Mount the Disk-On Module (DOM) filesystem
-  ansible.builtin.mount:
-    boot: false
-    fstype: ext2
-    path: /boot/mmcblkNp2
-    src: /dev/disk/by-id/mmc-004G60_0x1ad48a73-part2
-    state: mounted
-
-- name: Find the mtime for the DOM kernel
-  ansible.builtin.stat:
-    path: /boot/mmcblkNp2/boot/bzImage
-  register: nas_dom_kernel_stat
-
-- name: Find the mtime for the DOM initial ramdisk
-  ansible.builtin.stat:
-    path: /boot/mmcblkNp2/boot/initrd.boot
-  register: nas_dom_initrd_stat
-
-- name: Find all of the Debian installed kernels
-  ansible.builtin.find:
-    paths:
-      - /boot
-    patterns:
-      - 'vmlinuz-*'
-  register: nas_debian_kernel_files
-
-- name: Find all of the Debian installed initial ramdisks
-  ansible.builtin.find:
-    paths:
-      - /boot
-    patterns:
-      - 'initrd.img-*'
-  register: nas_debian_initrd_files
-
-- name: Copy the latest Debian kernel into the DOM if needed
-  vars:
-    nas_debian_latest_kernel: |
-      {{ nas_debian_kernel_files.files |
-         sort(attribute='mtime') |
-         list |
-         last }}
-  ansible.builtin.copy:
-    src: "{{ nas_debian_latest_kernel.path }}"
-    dest: "/boot/mmcblkNp2/boot/bzImage"
-    mode: "0644"
-    remote_src: true
-  when: "nas_debian_latest_kernel.mtime > nas_dom_kernel_stat.stat.mtime"
-  register: nas_debian_copied_kernel
-
-- name: Copy the latest Debian initial ramdisk into the DOM if needed
-  vars:
-    nas_debian_latest_initrd: |
-      {{ nas_debian_initrd_files.files |
-         sort(attribute='mtime') |
-         list |
-         last }}
-  ansible.builtin.copy:
-    src: "{{ nas_debian_latest_initrd.path }}"
-    dest: "/boot/mmcblkNp2/boot/initrd.boot"
-    mode: "0600"
-    remote_src: true
-  when: "nas_debian_latest_initrd.mtime > nas_dom_initrd_stat.stat.mtime"
-  register: nas_debian_copied_initrd
-
 - name: Warn and then reboot if necessary
   block:
     - name: Pause as a reminder to SSH into the dropbear early-user environment
@@ -114,8 +50,4 @@
         # Wait 30 minutes and then another 30 minutes if needed
         reboot_timeout: 1800
 
-  when: |-
-    nas_reboot_stat.stat.exists or
-    nas_reboot | default(False) or
-    nas_debian_copied_kernel is changed or
-    nas_debian_copied_initrd is changed
+  when: "nas_reboot_stat.stat.exists or nas_reboot | default(False)"

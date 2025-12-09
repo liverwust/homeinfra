@@ -6,6 +6,7 @@
 
 - name: Install Docker on the NAS
   ansible.builtin.import_tasks: docker.yml
+  when: false
 
 - name: Lay down files containing secrets
   ansible.builtin.include_tasks: secrets.yml
