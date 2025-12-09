@@ -9,11 +9,8 @@ all:
         k8s_control_plane:
           hosts:
             control1.cluster.wust.us:
-            control2.cluster.wust.us:
-            control3.cluster.wust.us:
 
         k8s_data_plane:
           hosts:
             worker1.cluster.wust.us:
             worker2.cluster.wust.us:
-            worker3.cluster.wust.us:
