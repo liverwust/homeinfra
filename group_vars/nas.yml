@@ -5,3 +5,6 @@ ansible_become_password: >-
   {{ lookup('bitwarden.secrets.lookup',
             'e670f7e8-27a2-4639-841c-b3ae0077a783') }}
 ansible_user: mclovin
+
+nas_zfs_device: /dev/disk/by-id/scsi-36848f690ee3de60030c9ff55192c7033-part1
+nas_zfs_mountpoint: /data

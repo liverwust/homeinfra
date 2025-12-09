@@ -4,9 +4,11 @@
 - name: Basic Debian tasks, including patching
   ansible.builtin.import_tasks: debian.yml
 
+- name: ZFS storage tasks for pools and filesystems
+  ansible.builtin.import_tasks: zfs.yml
+
 - name: Install Docker on the NAS
   ansible.builtin.import_tasks: docker.yml
-  when: false
 
 - name: Lay down files containing secrets
   ansible.builtin.include_tasks: secrets.yml
