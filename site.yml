@@ -1,18 +1,5 @@
 ---
 
-- name: Get the IPv4 address of the Ansible Control Node
-  hosts: localhost
-  gather_facts: false
-  become: false
-  tasks:
-    - name: Store the IPv4 address as a hostvar
-      ansible.builtin.set_fact:
-        ansible_control_node_external_ipv4: |-
-          {{ (lookup('ansible.builtin.url',
-                     'https://api.ipify.org?format=json',
-                     split_lines=False) |
-              from_json).ip }}
-
 - name: Configure DreamCompute cloud resources
   hosts: localhost
   gather_facts: false
@@ -40,39 +27,10 @@
 #  roles:
 #    - us_wust.homeinfra.k8s_nodes_update
 
-- name: Configure Kubernetes control nodes
-  hosts: k8s_control_plane
+- name: Configure Kubernetes nodes
+  hosts: k8s_nodes
   gather_facts: true
   become: true
-  vars:
-  # Configure access to internal network hosts
-    ansible_host: |-
-      {{ hostvars['localhost']['dreamhost_access_ipv4'][inventory_hostname] }}
-
-    # https://www.jeffgeerling.com/blog/2022/using-ansible-playbook-ssh-bastion-jump-host
-    ansible_ssh_common_args: |-
-      {{ '-o ProxyCommand="ssh -W %h:%p -q debian@' ~
-         hostvars['localhost']['dreamhost_access_ipv4'][dreamhost_control_plane_endpoint] ~
-         '"' }}
-
-  roles:
-    - us_wust.homeinfra.k8s_nodes
-
-- name: Configure Kubernetes worker nodes
-  hosts: k8s_data_plane
-  gather_facts: true
-  become: true
-  vars:
-  # Configure access to internal network hosts
-    ansible_host: |-
-      {{ hostvars['localhost']['dreamhost_access_ipv4'][inventory_hostname] }}
-
-    # https://www.jeffgeerling.com/blog/2022/using-ansible-playbook-ssh-bastion-jump-host
-    ansible_ssh_common_args: |-
-      {{ '-o ProxyCommand="ssh -W %h:%p -q debian@' ~
-         hostvars['localhost']['dreamhost_access_ipv4'][dreamhost_control_plane_endpoint] ~
-         '"' }}
-
   roles:
     - us_wust.homeinfra.k8s_nodes
 

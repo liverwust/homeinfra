@@ -4,13 +4,8 @@ all:
       hosts:
         jilliumz.amy.internal.wust.us:
 
-    k8s:
-      children:
-        k8s_control_plane:
-          hosts:
-            control1.cluster.wust.us:
-
-        k8s_data_plane:
-          hosts:
-            worker1.cluster.wust.us:
-            worker2.cluster.wust.us:
+    k8s_nodes:
+      hosts:
+        belthasar.cluster.wust.us:
+        gaspar.cluster.wust.us:
+        melchior.cluster.wust.us:
