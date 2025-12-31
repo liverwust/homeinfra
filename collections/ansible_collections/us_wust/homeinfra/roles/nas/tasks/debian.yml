@@ -21,7 +21,6 @@
       - shim-signed
       - systemd-timesyncd
       - tcpdump
-      - zfs-initramfs
     state: present
 
 - name: Load wireguard kernel module now and at boot
