@@ -19,6 +19,7 @@
       - linux-image-generic
       - openssh-server
       - popularity-contest
+      - quota
       - selinux-basics
       - selinux-policy-default
       - shim-signed
