@@ -53,3 +53,9 @@
         reboot_timeout: 1800
 
   when: "nas_reboot_stat.stat.exists or nas_reboot | default(False)"
+
+- name: Set SELinux boolean variable for 3ware RAID card
+  ansible.posix.seboolean:
+    name: smartmon_3ware
+    persistent: true
+    state: true
