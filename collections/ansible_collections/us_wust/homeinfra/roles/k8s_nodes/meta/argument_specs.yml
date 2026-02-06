@@ -29,13 +29,6 @@ argument_specs:
         type: str
         required: false
 
-      k8s_nodes_is_control:
-        description:
-          - Set to true when dealing with a control-plane node; false when
-            dealing with a worker-plane or data-plane node.
-        type: bool
-        required: true
-
       k8s_nodes_ssh_keys:
         description:
           - Shared sets of SSH host keypairs.

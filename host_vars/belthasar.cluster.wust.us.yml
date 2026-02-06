@@ -2,4 +2,4 @@
 
 k8s_nodes_volume_key: >-
   {{ lookup('bitwarden.secrets.lookup',
-            '51ce3131-a26c-4087-91aa-b341004a1d4f') }}
+            '2c41c46d-ff42-41b9-9601-b341004810c7') }}

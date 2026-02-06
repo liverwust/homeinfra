@@ -12,10 +12,6 @@ collection requires that the
 [openstacksdk](https://pypi.org/project/openstacksdk/) Python package be
 installed.
 
-This role assumes that control node hosts will belong to an Ansible hostname
-`dreamcompute_control`, and that they also set their `k8s_nodes_is_control`
-variable to true.
-
 ## Role Variables
 
 ```yaml
@@ -36,13 +32,6 @@ k8s_nodes_hacluster_password_plain:
       account for the pcs service.
   type: str
   required: false
-
-k8s_nodes_is_control:
-  description:
-    - Set to true when dealing with a control-plane node; false when
-      dealing with a worker-plane or data-plane node.
-  type: bool
-  required: true
 
 k8s_nodes_ssh_keys:
   description:
