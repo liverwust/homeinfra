@@ -5,7 +5,7 @@ ansible_user: debian
 
 k8s_nodes_user_password_hash: >-
   {{ lookup('bitwarden.secrets.lookup',
-            'f499e16a-f16d-4688-8a40-b3450047ebd9') }}
+            'e44e5c26-aa98-4298-9d27-b3e900595413') }}
 k8s_nodes_version_crio: v1.33
 k8s_nodes_version_kubernetes: v1.33
 

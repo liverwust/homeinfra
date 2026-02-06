@@ -14,23 +14,6 @@ installed.
 ## Role Variables
 
 ```yaml
-dreamhost_control_plane_endpoint:
-  description:
-    - DNS name or IPv4 address for the publicly-facing interface
-      associated with a floating IP on the control nodes.
-  type: str
-  required: true
-
-dreamhost_control_plane_floating_ip:
-  description:
-    - Floating IPv4 address associated with the control plane and the
-      control nodes.
-    - This doesn't have to be set initially, but it should eventually be
-      set once an IPv4 address has been assigned to our project from
-      DreamCompute's available pool.
-  type: str
-  required: false
-
 dreamhost_data_plane_endpoint:
   description:
     - DNS name or IPv4 address for the publicly-facing interface

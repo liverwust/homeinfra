@@ -42,13 +42,3 @@
          default(groups["k8s_control_plane"] |
                  first) }}
   register: dreamcompute_floating_ip_result
-
-- name: Report the ipv4 addresses for the control and data plane endpoints, for later use
-  ansible.builtin.set_fact:
-    dreamhost_access_ipv4: |-
-      {{ dreamhost_access_ipv4 | combine({
-         dreamhost_control_plane_endpoint:
-         dreamhost_control_plane_floating_ip,
-         dreamhost_data_plane_endpoint:
-         dreamhost_data_plane_floating_ip
-         }) }}

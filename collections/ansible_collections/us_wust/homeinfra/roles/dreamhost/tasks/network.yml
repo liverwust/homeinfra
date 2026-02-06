@@ -1,14 +1,6 @@
 ---
 # Configure shared DreamCompute resources
 
-- name: Get the IPv4 address of the Ansible Control Node
-  ansible.builtin.set_fact:
-    ansible_control_node_external_ipv4: |-
-      {{ (lookup('ansible.builtin.url',
-                 'https://api.ipify.org?format=json',
-                 split_lines=False) |
-          from_json).ip }}
-
 - name: Configure the Security Group for all Kubernetes nodes
   openstack.cloud.security_group:
     description: Security Group for all Kubernetes nodes
