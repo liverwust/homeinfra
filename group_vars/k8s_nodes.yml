@@ -12,3 +12,8 @@ k8s_nodes_version_kubernetes: v1.33
 # This is an emergent property of the chosen dreamhost_instance_image.
 k8s_nodes_volume_device: /dev/disk/by-path/virtio-pci-0000:00:05.0
 k8s_nodes_volume_size: 20     # Gigabytes
+
+k8s_nodes_vpn_ca_file: /etc/ssl/certs/internal.wust.us.pem
+k8s_nodes_vpn_remote_address: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            'b982915c-3267-4d4d-9acd-b3e90069a383') }}

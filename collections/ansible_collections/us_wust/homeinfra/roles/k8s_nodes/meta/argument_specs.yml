@@ -107,3 +107,16 @@ argument_specs:
             DreamCompute virtual machine instance.
         type: int
         required: true
+
+      k8s_nodes_vpn_ca_file:
+        description:
+          - Path to the certification authority public certificate file for the
+            OpenVPN server.
+        type: path
+        required: true
+
+      k8s_nodes_vpn_remote_address:
+        description:
+          - Address (hostname or IP) of the OpenVPN server for the backplane.
+        type: str
+        required: true

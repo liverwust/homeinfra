@@ -6,6 +6,7 @@
     name:
       - curl
       - cryptsetup
+      - openvpn
       - parted
       - software-properties-common
 
@@ -79,25 +80,33 @@
     persistent: present
     state: present
 
-- name: Fill in /etc/hosts with the IP addresses of my neighbors
-  ansible.builtin.lineinfile:
-    create: true
-    line: >-
-      {{ k8s_nodes_item.value ~ " " ~
-         (k8s_nodes_item.key |
-          regex_replace('^([^.]+).*$', '\1')) ~ " " ~
-         k8s_nodes_item.key }}
-    path: /etc/hosts
-    regexp: >-
-      {{ '^\S+\s+.*' ~
-         (k8s_nodes_item.key |
-          regex_escape()) ~
-         '.*$' }}
-  loop: "{{ hostvars['localhost']['dreamhost_access_ipv4'] | dict2items }}"
-  loop_control:
-    loop_var: k8s_nodes_item
-
+# - name: Fill in /etc/hosts with the IP addresses of my neighbors
+#   ansible.builtin.lineinfile:
+#     create: true
+#     line: >-
+#       {{ k8s_nodes_item.value ~ " " ~
+#          (k8s_nodes_item.key |
+#           regex_replace('^([^.]+).*$', '\1')) ~ " " ~
+#          k8s_nodes_item.key }}
+#     path: /etc/hosts
+#     regexp: >-
+#       {{ '^\S+\s+.*' ~
+#          (k8s_nodes_item.key |
+#           regex_escape()) ~
+#          '.*$' }}
+#   loop: "{{ hostvars['localhost']['dreamhost_access_ipv4'] | dict2items }}"
+#   loop_control:
+#     loop_var: k8s_nodes_item
+# 
 - name: Set the ansible_user's password for recovery purposes
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     password: "{{ k8s_nodes_user_password_hash }}"
+
+- name: Copy over the internal.wust.us Root CA
+  ansible.builtin.copy:
+    src: usr/local/share/ca-certificates/internal.wust.us.crt
+    dest: /usr/local/share/ca-certificates/internal.wust.us.crt
+    owner: root
+    group: root
+    mode: "0444"

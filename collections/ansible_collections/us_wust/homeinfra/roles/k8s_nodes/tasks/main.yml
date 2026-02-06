@@ -7,10 +7,10 @@
 - name: Configure the Debian guest OS appropriately
   ansible.builtin.import_tasks: debian.yml
 
-- name: Install and set up Pacemaker / Corosync for Floating IP support
-  ansible.builtin.include_tasks: pacemaker.yml
+- name: Install and configure OpenVPN to connect back to my router
+  ansible.builtin.import_tasks: openvpn.yml
 
-- name: Patch the Debian guest OS, interacting with PCS as needed
+- name: Patch the Debian guest OS
   ansible.builtin.include_tasks: patch.yml
 
 - name: Configure the Kubernetes and CRI-O packages

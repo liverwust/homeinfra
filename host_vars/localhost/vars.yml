@@ -3,13 +3,6 @@
 # DreamCompute API resources.
 
 # See also dreamhost_control_plane_endpoint in group_vars/all.yml
-dreamhost_control_plane_floating_ip: >-
-  {{ lookup('bitwarden.secrets.lookup',
-            '3a6c666b-4d59-4666-9493-b35000f7f057') }}
-dreamhost_data_plane_floating_ip: >-
-  {{ lookup('bitwarden.secrets.lookup',
-            '3839fda2-d53c-4deb-98fc-b35000f80daa') }}
-
 dreamhost_dns_api_key: >-
   {{ lookup('bitwarden.secrets.lookup',
             'd6405907-9cdb-43e0-9323-b36500fa1d86') }}

@@ -6,6 +6,9 @@ all:
 
     k8s_nodes:
       hosts:
-        belthasar.cluster.wust.us:
-        gaspar.cluster.wust.us:
-        melchior.cluster.wust.us:
+        belthasar.cluster.internal.wust.us:
+          ansible_host: belthasar.vpn.internal.wust.us
+        gaspar.cluster.internal.wust.us:
+          ansible_host: gaspar.vpn.internal.wust.us
+        melchior.cluster.internal.wust.us:
+          ansible_host: melchior.vpn.internal.wust.us

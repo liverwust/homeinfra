@@ -15,23 +15,6 @@
     path: /var/run/reboot-required
   register: k8s_nodes_update_reboot_stat
 
-- name: Check for the pacemaker/corosync configuration system (pcs)
-  ansible.builtin.stat:
-    path: /usr/sbin/pcs
-  register: k8s_nodes_update_pcs_stat
-
-- name: Obtain the pcs cluster XML status
-  ansible.utils.cli_parse:
-    command: /usr/sbin/pcs status xml
-    parser:
-      name: ansible.utils.xml
-  register: k8s_nodes_update_pcs_command
-  when:
-    - k8s_nodes_update_pcs_stat.stat.exists
-    - |
-      k8s_nodes_update_reboot_stat.stat.exists or
-      dreamhost_reboot | default(False)
-
 - name: Reboot the computer post-upgrade OR if forced
   ansible.builtin.reboot:
   when: |

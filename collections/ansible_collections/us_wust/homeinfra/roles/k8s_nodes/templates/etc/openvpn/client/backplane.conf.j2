@@ -1,0 +1,13 @@
+client
+dev tun
+proto udp
+remote {{ k8s_nodes_vpn_remote_address }} 1194
+resolv-retry infinite
+nobind
+float
+ncp-ciphers AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC:CHACHA20-POLY1305
+keepalive 15 60
+remote-cert-tls server
+ca {{ k8s_nodes_vpn_ca_file }}
+cert client.crt
+key client.key
