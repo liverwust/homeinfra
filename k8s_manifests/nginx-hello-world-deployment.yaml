@@ -36,7 +36,7 @@ spec:
         app: nginx
     spec:
       containers:
-      - image: docker.io/liverwust/wust_us_k8s:0.0.4
+      - image: docker.io/liverwust/wust_us_k8s:0.0.7
         name: nginx
         ports:
         - containerPort: 8080
