@@ -15,6 +15,11 @@ spec:
   - port: 8080
     targetPort: 8080
     nodePort: 30001
+    name: web
+  - port: 8443
+    targetPort: 8443
+    nodePort: 30002
+    name: secureweb
   selector:
     app: nginx
 
@@ -36,17 +41,27 @@ spec:
         app: nginx
     spec:
       containers:
-      - image: docker.io/liverwust/wust_us_k8s:0.0.7
+      - image: docker.io/liverwust/wust_us_k8s:0.0.8
         name: nginx
         ports:
         - containerPort: 8080
           name: web
+        - containerPort: 8443
+          name: secureweb
+        volumeMounts:
+        - name: letsencrypt
+          mountPath: /letsencrypt
+          readOnly: true
       imagePullSecrets:
       - name: my-docker
       topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: DoNotSchedule
-          labelSelector:
-            matchLabels:
-              app: nginx
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: nginx
+      volumes:
+      - name: letsencrypt
+        configMap:
+          name: letsencrypt
