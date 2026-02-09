@@ -10,18 +10,18 @@ kind: Service
 metadata:
   name: nginx
 spec:
-  type: NodePort
   ports:
-  - port: 8080
+  - port: 80
     targetPort: 8080
-    nodePort: 30001
     name: web
-  - port: 8443
+  - port: 443
     targetPort: 8443
-    nodePort: 30002
     name: secureweb
   selector:
     app: nginx
+  externalIPs:
+    - 10.171.246.75
+    - 10.171.246.76
 
 ---
 apiVersion: apps/v1
