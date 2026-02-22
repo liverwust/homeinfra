@@ -8,7 +8,6 @@ spec:
   # Configures Calico networking.
   calicoNetwork:
     bgp: Disabled
-    mtu: 8850
     ipPools:
       - name: default-ipv4-ippool
         blockSize: 26
@@ -16,6 +15,11 @@ spec:
         encapsulation: VXLAN
         natOutgoing: Enabled
         nodeSelector: all()
+    nodeAddressAutodetectionV4:
+      firstFound: false
+      # This is what Debian calls its real network interface. Importantly, this
+      # will NOT match tun0 (the backend admin VPN).
+      interface: '^ens[0-9]$'
 
 ---
 # This section configures the Calico API server.
