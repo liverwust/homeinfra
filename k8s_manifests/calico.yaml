@@ -8,6 +8,7 @@ spec:
   # Configures Calico networking.
   calicoNetwork:
     bgp: Disabled
+    mtu: 8850
     ipPools:
       - name: default-ipv4-ippool
         blockSize: 26
