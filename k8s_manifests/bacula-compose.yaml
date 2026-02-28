@@ -1,5 +1,5 @@
 ---
-name: bacula-on-qnap
+name: bacula-on-jilliumz
 
 services:
   # https://hub.docker.com/_/postgres
@@ -10,43 +10,35 @@ services:
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
     volumes:
-      - database-data:/var/lib/postgresql/data
-      - /share/Container/user-config/database/initdb.d:/docker-entrypoint-initdb.d:ro
+      - /data/bacula/db/postgresql-data:/var/lib/postgresql
+      - /data/bacula/db/postgresql-initdb.d:/docker-entrypoint-initdb.d:ro
     secrets:
       - postgres-bacula-password
       - postgres-password
 
   bacula-dir:
-    image: liverwust/bacula-dir:bookworm-13.0.4-1
+    image: liverwust/bacula-dir:bookworm-15.0.3-1
     restart: on-failure:3
     ports:
       - 9101:9101
     volumes:
-      - letsencrypt:/mnt/letsencrypt:ro
-      - /share/Container/user-config/bacula-dir/archive:/opt/bacula/archive
-      - /share/Container/user-config/bacula-dir/bsr:/opt/bacula/bsr
-      - /share/Container/user-config/bacula-dir/etc:/opt/bacula/etc
-      - /share/Container/user-config/bacula-dir/log:/opt/bacula/log
-      - /share/Container/user-config/bacula-dir/working:/opt/bacula/working
+      - /data/bacula/dir/archive:/opt/bacula/archive
+      - /data/bacula/dir/bsr:/opt/bacula/bsr
+      - /data/bacula/dir/etc:/opt/bacula/etc
+      - /data/bacula/dir/log:/opt/bacula/log
+      - /data/bacula/dir/working:/opt/bacula/working
 
   bacula-sd:
-    image: liverwust/bacula-sd:bookworm-13.0.4-4
+    image: liverwust/bacula-sd:bookworm-15.0.3-1
     restart: on-failure:3
     ports:
       - 9103:9103
     volumes:
-      - letsencrypt:/mnt/letsencrypt:ro
-      - /share/Bacula/archive:/opt/bacula/archive
-      - /share/Container/user-config/bacula-sd/bsr:/opt/bacula/bsr
-      - /share/Container/user-config/bacula-sd/etc:/opt/bacula/etc
-      - /share/Container/user-config/bacula-sd/log:/opt/bacula/log
-      - /share/Container/user-config/bacula-sd/working:/opt/bacula/working
-
-volumes:
-  database-data:
-
-  letsencrypt:
-    external: true
+      - /data/bacula/sd/archive:/opt/bacula/archive
+      - /data/bacula/sd/bsr:/opt/bacula/bsr
+      - /data/bacula/sd/etc:/opt/bacula/etc
+      - /data/bacula/sd/log:/opt/bacula/log
+      - /data/bacula/sd/working:/opt/bacula/working
 
 secrets:
   # Note: with Docker Desktop, it is necessary to add one of these parent
@@ -54,9 +46,9 @@ secrets:
   # https://docs.docker.com/desktop/settings-and-maintenance/settings/#file-sharing
 
   # The superuser password for the postgresql database.
-  postgres-bacula-password:
-    file: /share/Container/user-config/database/postgres-bacula-password.txt
+  postgres-password:
+    file: /data/bacula/db/secrets/postgres-password.txt
 
   # The user password for the Bacula user accessing PostgreSQL
-  postgres-password:
-    file: /share/Container/user-config/database/postgres-password.txt
+  postgres-bacula-password:
+    file: /data/bacula/db/secrets/postgres-bacula-password.txt

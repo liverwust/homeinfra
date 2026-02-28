@@ -1,7 +1,7 @@
 FROM debian:bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV BACULA_VERSION=13.0.4
+ENV BACULA_VERSION=15.0.3
 # Set BACULA_CUSTOMER from the calling shell like this:
 # BACULA_CUSTOMER=xxx docker build --secret id=BACULA_CUSTOMER .
 
