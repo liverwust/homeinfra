@@ -1,14 +1,9 @@
 #
 # Bacula Director Configuration file
 #
-#  For Bacula release 13.0.4 (12 February 2024) -- debian 12.0
-#
-# Copyright (C) 2000-2022 Kern Sibbald
-# License: BSD 2-Clause; see file LICENSE-FOSS
-#
 
 Director {
-  Name = {{ nas_bacula_fqdn }}-dir
+  Name = {{ nas_bacula_dir_fqdn }}
   DIRport = 9101
   QueryFile = "/opt/bacula/scripts/query.sql"
   WorkingDirectory = "/opt/bacula/working"
@@ -20,58 +15,11 @@ Director {
   # TLS configuration directives
   TLS Enable = yes
   TLS Require = yes
-  TLS Certificate = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/fullchain.pem
-  TLS Key = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/privkey.pem
-  TLS Verify Peer = no
+  TLS Certificate = /opt/bacula/etc/certs/{{ nas_bacula_dir_fqdn }}.pem
+  TLS Key = /opt/bacula/etc/certs/{{ nas_bacula_dir_fqdn }}.key
+  TLS Verify Peer = yes
+  TLS CA Certificate File = /opt/bacula/etc/certs/root_intermediate.pem
 }
-
-Job {
-  Name = bramball-backup
-  Enabled = yes
-  Type = Backup
-  Level = Incremental
-  Client = bramball-fd
-  FileSet = "Linux Laptop"
-  Schedule = "WeeklyCycle"
-  Storage = File1
-  Messages = Standard
-  Pool = File
-  Maximum Bandwidth = 5 m/s
-  SpoolAttributes = yes
-  Priority = 10
-  Write Bootstrap = "/opt/bacula/working/%c.bsr"
-}
-
-Job {
-  Name = desktop-hppenbn-backup
-  Enabled = yes
-  Type = Backup
-  Level = Incremental
-  Client = desktop-hppenbn-fd
-  FileSet = "Windows Desktop"
-  Schedule = "WeeklyCycle"
-  Storage = File1
-  Messages = Standard
-  Pool = File
-  Maximum Bandwidth = 5 m/s
-  SpoolAttributes = yes
-  Priority = 10
-  Write Bootstrap = "/opt/bacula/working/%c.bsr"
-}
-
-Job {
-  Name = "RestoreFiles"
-  Type = Restore
-  Client=bramball-fd
-  Storage = File1
-# The FileSet and Pool directives are not used by Restore Jobs
-# but must not be removed
-  FileSet="Linux Laptop"
-  Pool = File
-  Messages = Standard
-  Where = /opt/bacula/archive/bacula-restores
-}
-
 
 FileSet {
   Name = "Linux Laptop"
@@ -101,29 +49,9 @@ Schedule {
   Run = Incremental mon-sat at 23:05
 }
 
-Client {
-  Name = bramball-fd
-  Catalog = BaculaCatalog
-  Password = "{{ lookup('bitwarden.secrets.lookup', 'fb814d1f-9f56-44a2-838f-b28f0096d876') }}"
-  AllowFDConnections = yes
-  File Retention = 60 days            # 60 days
-  Job Retention = 6 months            # six months
-  AutoPrune = yes                     # Prune expired Jobs/Files
-}
-
-Client {
-  Name = desktop-hppenbn-fd
-  Catalog = BaculaCatalog
-  Password = "{{ lookup('bitwarden.secrets.lookup', 'f280a138-2960-40c6-8340-b29400f72804') }}"
-  AllowFDConnections = yes
-  File Retention = 60 days            # 60 days
-  Job Retention = 6 months            # six months
-  AutoPrune = yes                     # Prune expired Jobs/Files
-}
-
 Catalog {
   Name = BaculaCatalog
-  password = "{{ nas_postgres_bacula_password }}"
+  password = "{{ nas_bacula_postgres_password }}"
   DB Name = bacula
   user = bacula
   DB Address = database
@@ -185,7 +113,7 @@ Pool {
 
 Storage {
   Name = File1
-  Address = bacula.wust.us
+  Address = "{{ nas_bacula_sd_fqdn }}"
   Password = "{{ nas_bacula_dir_sd_password }}"
   Device = FileChgr1-Dev1
   Media Type = File1
@@ -194,5 +122,10 @@ Storage {
   # TLS configuration directives
   TLS Enable = yes
   TLS Require = yes
-  TLS CA Certificate File = /usr/lib/ssl/cert.pem
+  TLS Certificate = /opt/bacula/etc/certs/{{ nas_bacula_dir_fqdn }}.pem
+  TLS Key = /opt/bacula/etc/certs/{{ nas_bacula_dir_fqdn }}.key
+  TLS CA Certificate File = /opt/bacula/etc/certs/root_intermediate.pem
 }
+
+#https://www.bacula.org/en/dev-manual/main/main/Customizing_Configuration_F.html
+@|"sh -c 'for f in /etc/bacula/clientdefs/*.conf ; do echo @${f} ; done'"

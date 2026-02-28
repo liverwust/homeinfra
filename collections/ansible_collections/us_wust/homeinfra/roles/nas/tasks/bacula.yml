@@ -1,0 +1,17 @@
+---
+# Install Bacula configuration files
+
+- name: Install Bacula configuration files
+  ansible.builtin.template:
+    src: "{{ nas_item.src }}"
+    dest: "{{ nas_item.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop_control:
+    loop_var: nas_item
+  loop:
+    - src: bacula-dir/etc/bacula-dir.conf.j2
+      dest: /data/bacula/dir/etc/bacula-dir.conf
+    - src: bacula-sd/etc/bacula-sd.conf.j2
+      dest: /data/bacula/sd/etc/bacula-sd.conf

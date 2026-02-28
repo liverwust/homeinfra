@@ -5,3 +5,18 @@ ansible_become_password: >-
   {{ lookup('bitwarden.secrets.lookup',
             'e670f7e8-27a2-4639-841c-b3ae0077a783') }}
 ansible_user: mclovin
+
+nas_bacula_dir_fqdn: director.bacula.internal.wust.us
+nas_bacula_sd_fqdn: storage.bacula.internal.wust.us
+
+nas_bacula_console_password: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            'bc579cb7-fe46-4043-ae88-b3ff007842e8') }}
+
+nas_bacula_dir_sd_password: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            'c045e38c-f947-4e18-bfbe-b3ff007ab0f0') }}
+
+nas_bacula_postgres_password: >-
+  {{ lookup('bitwarden.secrets.lookup',
+            '2ab369e5-d7d4-4231-a29e-b3ff007a15a2') }}

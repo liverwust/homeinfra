@@ -1,14 +1,9 @@
 #
 # Bacula Storage Daemon Configuration file
 #
-#  For Bacula release 13.0.4 (12 February 2024) -- debian 12.0
-#
-# Copyright (C) 2000-2022 Kern Sibbald
-# License: BSD 2-Clause; see file LICENSE-FOSS
-#
 
 Storage {
-  Name = {{ nas_bacula_fqdn }}-sd
+  Name = {{ nas_bacula_sd_fqdn }}
   SDPort = 9103
   WorkingDirectory = "/opt/bacula/working"
   Pid Directory = "/opt/bacula/working"
@@ -18,24 +13,30 @@ Storage {
   # TLS configuration directives
   TLS Enable = yes
   TLS Require = yes
-  TLS Certificate = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/fullchain.pem
-  TLS Key = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/privkey.pem
+  TLS Certificate = /opt/bacula/etc/certs/{{ nas_bacula_sd_fqdn }}.pem
+  TLS Key = /opt/bacula/etc/certs/{{ nas_bacula_sd_fqdn }}.key
+  # Peer certificate is not required/requested -- peer validity
+  # is verified by the storage connection cookie provided to the
+  # File Daemon by the director.
   TLS Verify Peer = no
+  TLS CA Certificate File = /opt/bacula/etc/certs/root_intermediate.pem
 }
 
 #
 # List Directors who are permitted to contact Storage daemon
 #
 Director {
-  Name = {{ nas_bacula_fqdn }}-dir
+  Name = {{ nas_bacula_dir_fqdn }}
   Password = "{{ nas_bacula_dir_sd_password }}"
 
   # TLS configuration directives
   TLS Enable = yes
   TLS Require = yes
-  TLS Certificate = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/fullchain.pem
-  TLS Key = /mnt/letsencrypt/live/{{ nas_bacula_letsencrypt_fqdn | default(nas_bacula_fqdn) }}/privkey.pem
-  TLS Verify Peer = no
+  TLS Certificate = /opt/bacula/etc/certs/{{ nas_bacula_sd_fqdn }}.pem
+  TLS Key = /opt/bacula/etc/certs/{{ nas_bacula_sd_fqdn }}.key
+  TLS Verify Peer = yes
+  TLS Allowed CN = {{ nas_bacula_dir_fqdn }}
+  TLS CA Certificate File = /opt/bacula/etc/certs/root_intermediate.pem
 }
 
 Device {
@@ -56,5 +57,5 @@ Device {
 #
 Messages {
   Name = Standard
-  director = {{ nas_bacula_fqdn }}-dir = all
+  director = {{ nas_bacula_dir_fqdn }} = all
 }

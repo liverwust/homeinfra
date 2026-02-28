@@ -3,3 +3,6 @@
 
 - name: Basic Debian tasks, including patching
   ansible.builtin.import_tasks: debian.yml
+
+- name: Install Bacula configuration files
+  ansible.builtin.import_tasks: bacula.yml
