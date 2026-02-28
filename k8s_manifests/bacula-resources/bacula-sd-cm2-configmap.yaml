@@ -1,0 +1,69 @@
+apiVersion: v1
+data:
+  bacula-sd.conf: |
+    #
+    # Bacula Storage Daemon Configuration file
+    #
+
+    Storage {
+      Name = storage.bacula.internal.wust.us
+      SDPort = 9103
+      WorkingDirectory = "/opt/bacula/working"
+      Pid Directory = "/opt/bacula/working"
+      Plugin Directory = "/opt/bacula/plugins"
+      Maximum Concurrent Jobs = 20
+
+      # TLS configuration directives
+      TLS Enable = yes
+      TLS Require = yes
+      TLS Certificate = /opt/bacula/etc/certs/storage.bacula.internal.wust.us.pem
+      TLS Key = /opt/bacula/etc/certs/storage.bacula.internal.wust.us.key
+      # Peer certificate is not required/requested -- peer validity
+      # is verified by the storage connection cookie provided to the
+      # File Daemon by the director.
+      TLS Verify Peer = no
+      TLS CA Certificate File = /opt/bacula/etc/certs/root_intermediate.pem
+    }
+
+    #
+    # List Directors who are permitted to contact Storage daemon
+    #
+    Director {
+      Name = director.bacula.internal.wust.us
+      Password = "qsI^&]ikQT-0{e@1"
+
+      # TLS configuration directives
+      TLS Enable = yes
+      TLS Require = yes
+      TLS Certificate = /opt/bacula/etc/certs/storage.bacula.internal.wust.us.pem
+      TLS Key = /opt/bacula/etc/certs/storage.bacula.internal.wust.us.key
+      TLS Verify Peer = yes
+      TLS Allowed CN = director.bacula.internal.wust.us
+      TLS CA Certificate File = /opt/bacula/etc/certs/root_intermediate.pem
+    }
+
+    Device {
+      Name = FileChgr1-Dev1
+      Media Type = File1
+      Archive Device = /opt/bacula/archive
+      LabelMedia = yes
+      Random Access = Yes
+      AutomaticMount = yes
+      RemovableMedia = no
+      AlwaysOpen = no
+      Maximum Concurrent Jobs = 5
+    }
+
+    #
+    # Send all messages to the Director,
+    # mount messages also are sent to the email address
+    #
+    Messages {
+      Name = Standard
+      director = director.bacula.internal.wust.us = all
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: bacula-sd
+  name: bacula-sd-cm2

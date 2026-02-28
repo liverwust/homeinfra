@@ -47,8 +47,8 @@ secrets:
 
   # The superuser password for the postgresql database.
   postgres-password:
-    file: /data/bacula/db/secrets/postgres-password.txt
+    file: /data/postgresql/secrets/postgres-password.txt
 
   # The user password for the Bacula user accessing PostgreSQL
   postgres-bacula-password:
-    file: /data/bacula/db/secrets/postgres-bacula-password.txt
+    file: /data/postgresql/secrets/postgres-bacula-password.txt
