@@ -3,15 +3,15 @@ name: bacula-on-jilliumz
 
 services:
   # https://hub.docker.com/_/postgres
-  database:
+  postgresql:
     image: postgres
     restart: on-failure:3
     shm_size: 128mb
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
     volumes:
-      - /data/bacula/db/postgresql-data:/var/lib/postgresql
-      - /data/bacula/db/postgresql-initdb.d:/docker-entrypoint-initdb.d:ro
+      - /data/postgresql/data:/var/lib/postgresql
+      - /data/postgresql/initdb.d:/docker-entrypoint-initdb.d:ro
     secrets:
       - postgres-bacula-password
       - postgres-password
