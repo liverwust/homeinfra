@@ -4,33 +4,31 @@
 
 - name: Add the Kubernetes repository key
   ansible.builtin.deb822_repository:
+    name: kubernetes
     signed_by: |
       {{ 'https://pkgs.k8s.io/core:/stable:/' ~
          k8s_nodes_version_kubernetes ~
          '/deb/Release.key' }}
-    name: kubernetes
+    suites: /
+    architectures: amd64
     uris: |
-      {{ 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] ' ~
-         'https://pkgs.k8s.io/core:/stable:/' ~
+      {{ 'https://pkgs.k8s.io/core:/stable:/' ~
          k8s_nodes_version_kubernetes ~
-         '/deb/ /' }}
+         '/deb/' }}
 
 - name: Add the CRI-O repository key
-  ansible.builtin.apt_key:
-    keyring: /etc/apt/keyrings/cri-o-apt-keyring.gpg
-    url: |
+  ansible.builtin.deb822_repository:
+    name: crio
+    signed_by: |
       {{ 'https://download.opensuse.org/repositories/isv:/cri-o:/stable:/' ~
          k8s_nodes_version_crio ~
          '/deb/Release.key' }}
-
-- name: Add the CRI-O repository
-  ansible.builtin.apt_repository:
-    filename: kubernetes
-    repo: |
-      {{ 'deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] '
-         'https://download.opensuse.org/repositories/isv:/cri-o:/stable:/' ~
+    suites: /
+    architectures: amd64
+    uris: |
+      {{ 'https://download.opensuse.org/repositories/isv:/cri-o:/stable:/' ~
          k8s_nodes_version_crio ~
-         '/deb/ /' }}
+         '/deb/' }}
 
 - name: Install the packages for Kubernetes and CRI-O
   ansible.builtin.apt:
