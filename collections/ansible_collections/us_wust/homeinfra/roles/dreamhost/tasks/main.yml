@@ -9,9 +9,3 @@
   loop_control:
     loop_var: dreamhost_instance_name
   loop: "{{ groups['k8s_nodes'] }}"
-
-- name: Set up DreamCompute floating IPs
-  ansible.builtin.import_tasks: floating_ip.yml
-
-- name: Submit DreamCompute IP address to DreamHost DNS service
-  ansible.builtin.import_tasks: dns.yml

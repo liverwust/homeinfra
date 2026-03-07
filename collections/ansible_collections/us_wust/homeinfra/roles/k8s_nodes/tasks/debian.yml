@@ -4,11 +4,13 @@
 - name: Install extra packages
   ansible.builtin.apt:
     name:
+      - apt-transport-https
+      - ca-certificates
       - curl
       - cryptsetup
+      - gnupg
       - openvpn
       - parted
-      - software-properties-common
 
 - name: Set up the data volume partition
   community.general.parted:
@@ -106,7 +108,12 @@
 - name: Copy over the internal.wust.us Root CA
   ansible.builtin.copy:
     src: usr/local/share/ca-certificates/internal.wust.us.crt
-    dest: /usr/local/share/ca-certificates/internal.wust.us.crt
+    dest: "{{ k8s_nodes_rootca_dest }}"
     owner: root
     group: root
     mode: "0444"
+  loop_control:
+    loop_var: k8s_nodes_rootca_dest
+  loop:
+    - /etc/ssl/certs/internal.wust.us.pem
+    - /usr/local/share/ca-certificates/internal.wust.us.crt

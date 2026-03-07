@@ -1,5 +1,11 @@
 ---
 
+dreamhost_instance_flavor: "gp1.warpspeed"
+dreamhost_instance_image: "Debian-13"
+
+k8s_nodes_volume_device: /dev/disk/by-path/virtio-pci-0000:00:06.0
+k8s_nodes_volume_size: 20     # Gigabytes
+
 k8s_nodes_volume_key: >-
   {{ lookup('bitwarden.secrets.lookup',
             'e9beaf4f-8742-4625-94d1-b3410049c833') }}
