@@ -1,0 +1,5 @@
+# For DreamHost VPS
+
+<Location /privacy>
+Header set Content-Type "text/html"
+</Location>
