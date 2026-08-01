@@ -1,0 +1,322 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgreql
+  labels:
+    app: postgresql
+  namespace: bacula
+spec:
+  ports:
+    - port: 3306
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bacula-dir
+  labels:
+    app: bacula-dir
+  namespace: bacula
+spec:
+  ports:
+    - port: 9101
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bacula-sd
+  labels:
+    app: bacula-sd
+  namespace: bacula
+spec:
+  ports:
+    - port: 9103
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  namespace: bacula
+spec:
+  selector:
+    matchLabels:
+      app: postgresql
+  serviceName: "postgresql"
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: docker.io/postgres:18.4-bookworm
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - prefix: POSTGRES_
+              secretRef:
+                name: postgresql
+          volumeMounts:
+            - name: postgresql
+              mountPath: /var/lib/postgresql
+      volumes:
+        - name: postgresql
+          persistentVolumeClaim:
+            claimName: postgresql
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bacula-dir
+  labels:
+    app: bacula-dir
+  namespace: bacula
+spec:
+  selector:
+    matchLabels:
+      app: bacula-dir
+  template:
+    metadata:
+      labels:
+        app: bacula-dir
+    spec:
+      containers:
+        - name: bacula-dir
+          image: docker.io/liverwust/bacula-dir:15.0.3-2
+          ports:
+            - containerPort: 9101
+          volumeMounts:
+            - name: bacula-dir-archive
+              mountPath: /opt/bacula/archive
+            - name: bacula-dir-bsr
+              mountPath: /opt/bacula/bsr
+            - name: bacula-dir-etc
+              mountPath: /opt/bacula/etc
+            - name: bacula-dir-log
+              mountPath: /opt/bacula/log
+            - name: bacula-dir-working
+              mountPath: /opt/bacula/working
+      volumes:
+        - name: bacula-dir-archive
+          persistentVolumeClaim:
+            claimName: bacula-dir-archive
+        - name: bacula-dir-bsr
+          persistentVolumeClaim:
+            claimName: bacula-dir-bsr
+        - name: bacula-dir-etc
+          persistentVolumeClaim:
+            claimName: bacula-dir-etc
+        - name: bacula-dir-log
+          persistentVolumeClaim:
+            claimName: bacula-dir-log
+        - name: bacula-dir-working
+          persistentVolumeClaim:
+            claimName: bacula-dir-working
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bacula-sd
+  labels:
+    app: bacula-sd
+  namespace: bacula
+spec:
+  selector:
+    matchLabels:
+      app: bacula-sd
+  template:
+    metadata:
+      labels:
+        app: bacula-sd
+    spec:
+      containers:
+        - name: bacula-sd
+          image: docker.io/liverwust/bacula-sd:15.0.3-2
+          ports:
+            - containerPort: 9101
+          volumeMounts:
+            - name: bacula-sd-archive
+              mountPath: /opt/bacula/archive
+            - name: bacula-sd-bsr
+              mountPath: /opt/bacula/bsr
+            - name: bacula-sd-etc
+              mountPath: /opt/bacula/etc
+            - name: bacula-sd-log
+              mountPath: /opt/bacula/log
+            - name: bacula-sd-working
+              mountPath: /opt/bacula/working
+      volumes:
+        - name: bacula-sd-archive
+          persistentVolumeClaim:
+            claimName: bacula-sd-archive
+        - name: bacula-sd-bsr
+          persistentVolumeClaim:
+            claimName: bacula-sd-bsr
+        - name: bacula-sd-etc
+          persistentVolumeClaim:
+            claimName: bacula-sd-etc
+        - name: bacula-sd-log
+          persistentVolumeClaim:
+            claimName: bacula-sd-log
+        - name: bacula-sd-working
+          persistentVolumeClaim:
+            claimName: bacula-sd-working
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-dir-archive
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-dir-bsr
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-dir-etc
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-dir-log
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-dir-working
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-sd-archive
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-sd-bsr
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-sd-etc
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-sd-log
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bacula-sd-working
+  namespace: bacula
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
