@@ -2,13 +2,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgreql
+  name: postgresql
   labels:
     app: postgresql
   namespace: bacula
 spec:
   ports:
-    - port: 3306
+    - port: 5432
+  selector:
+    app: postgresql
 
 ---
 apiVersion: v1
@@ -21,6 +23,8 @@ metadata:
 spec:
   ports:
     - port: 9101
+  selector:
+    app: bacula-dir
 
 ---
 apiVersion: v1
@@ -33,18 +37,21 @@ metadata:
 spec:
   ports:
     - port: 9103
+  selector:
+    app: bacula-sd
 
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: postgresql
+  labels:
+    app: postgresql
   namespace: bacula
 spec:
   selector:
     matchLabels:
       app: postgresql
-  serviceName: "postgresql"
   template:
     metadata:
       labels:
@@ -54,7 +61,7 @@ spec:
         - name: postgresql
           image: docker.io/postgres:18.4-bookworm
           ports:
-            - containerPort: 3306
+            - containerPort: 5432
           envFrom:
             - prefix: POSTGRES_
               secretRef:
@@ -89,6 +96,7 @@ spec:
           image: docker.io/liverwust/bacula-dir:15.0.3-2
           ports:
             - containerPort: 9101
+              hostPort: 9101
           volumeMounts:
             - name: bacula-dir-archive
               mountPath: /opt/bacula/archive
@@ -138,7 +146,8 @@ spec:
         - name: bacula-sd
           image: docker.io/liverwust/bacula-sd:15.0.3-2
           ports:
-            - containerPort: 9101
+            - containerPort: 9103
+              hostPort: 9103
           volumeMounts:
             - name: bacula-sd-archive
               mountPath: /opt/bacula/archive
