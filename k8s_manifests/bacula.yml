@@ -96,7 +96,6 @@ spec:
           image: docker.io/liverwust/bacula-dir:15.0.3-2
           ports:
             - containerPort: 9101
-              hostPort: 9101
           volumeMounts:
             - name: bacula-dir-archive
               mountPath: /opt/bacula/archive
@@ -147,7 +146,6 @@ spec:
           image: docker.io/liverwust/bacula-sd:15.0.3-2
           ports:
             - containerPort: 9103
-              hostPort: 9103
           volumeMounts:
             - name: bacula-sd-archive
               mountPath: /opt/bacula/archive
