@@ -1,5 +1,9 @@
 FROM debian:bookworm
+VOLUME /opt/bacula/archive
+VOLUME /opt/bacula/bsr
 VOLUME /opt/bacula/etc
+VOLUME /opt/bacula/log
+VOLUME /opt/bacula/working
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV BACULA_VERSION=15.0.3
