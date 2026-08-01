@@ -22,9 +22,9 @@ metadata:
   namespace: ejbca
 spec:
   ports:
-    - port: 80
+    - port: 8080
       name: ejbca-node1-http
-    - port: 443
+    - port: 8443
       name: ejbca-node1-https
   selector:
     app: ejbca-node1
@@ -105,3 +105,17 @@ spec:
     requests:
       storage: 1Gi
 
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ejbca-web-topdir
+  namespace: ejbca
+spec:
+  parentRefs:
+    - name: traefik-gateway
+      namespace: kube-system
+  rules:
+    - backendRefs:
+        - name: ejbca-node1
+          port: 8080
