@@ -1,0 +1,90 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: taskwarrior-backup
+  labels:
+    app: taskwarrior-backup
+  namespace: taskwarrior-backup
+spec:
+  schedule: "23 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: taskwarrior-backup
+              image: liverwust/taskwarrior-local:0.5.0
+              command:
+                - /bin/bash
+                - -c
+                - 'task sync && task export > /home/taskwarrior/.task/taskdb/export_`date +%s`.json'
+              env:
+                - name: PATH
+                  value: /home/taskwarrior/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+                - name: TASKRC
+                  value: /home/taskwarrior/.task/taskrc/taskrc
+              securityContext:
+                runAsNonRoot: true
+                runAsGroup: 1000
+                runAsUser: 1000
+              volumeMounts:
+                - name: taskwarrior-backup-taskdb
+                  mountPath: /home/taskwarrior/.task/taskdb
+                - name: taskwarrior-backup-taskrc
+                  mountPath: /home/taskwarrior/.task/taskrc
+                - name: taskwarrior-backup-taskrc-perhost
+                  mountPath: /home/taskwarrior/.task/taskrc_perhost
+          restartPolicy: Never
+          volumes:
+            - name: taskwarrior-backup-taskdb
+              persistentVolumeClaim:
+                claimName: taskwarrior-backup-taskdb
+            - name: taskwarrior-backup-taskrc
+              persistentVolumeClaim:
+                claimName: taskwarrior-backup-taskrc
+            - name: taskwarrior-backup-taskrc-perhost
+              persistentVolumeClaim:
+                claimName: taskwarrior-backup-taskrc-perhost
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: taskwarrior-backup-taskdb
+  namespace: taskwarrior-backup
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: taskwarrior-backup-taskrc
+  namespace: taskwarrior-backup
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 64Mi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: taskwarrior-backup-taskrc-perhost
+  namespace: taskwarrior-backup
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 64Mi
